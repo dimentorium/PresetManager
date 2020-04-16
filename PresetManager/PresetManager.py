@@ -9,6 +9,7 @@ import pickle
 import reaper.preset as rp
 import reapy
 import core.ui as ui
+import core.items as items
 
 import copy
 
@@ -73,6 +74,14 @@ class main_view():
         self.presettree.configure(yscrollcommand=vsb.set)
         current_row +=8
 
+        #Treeview for presets
+        self.presetinfo = Treeview(self.root)
+        self.presetinfo.grid(row=current_row, rowspan=2, columnspan=3, padx=5, pady=5, sticky='ew')
+        self.presetinfo["columns"] = ("Value")
+        self.presetinfo.heading("#0", text="Property")
+        self.presetinfo.heading("Value", text="Value")
+        current_row +=4
+
         #Separator
         Separator(self.root,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
 
@@ -80,6 +89,8 @@ class main_view():
 
         #self.simulate_db()  
 
+#--------------------------------------------------------------------------#
+#-------------------Search Function----------------------------------------#
     def search(self, *args):
         self._search_filter = self._entry_text.get()
         self.update_list()
@@ -91,13 +102,13 @@ class main_view():
         self.root.mainloop()
     
     def save_preset(self):
-        #test = ui.SavePreset(self.root).selection
         project = reapy.Project()
         if project.n_selected_tracks > 0:
-            preset_name = simpledialog.askstring("Input", "Please enter preset Name", parent=self.root)
-            if preset_name != None and preset_name != "":
-                newpreset = rp.save(preset_name)
-                self.preset_list[preset_name] = newpreset
+            cancelled, result = ui.save_preset_dialog(self.root)
+            if not cancelled:
+                newpreset = rp.save(result[0])
+                vsti_item = items.vstipreset(result[0], newpreset, result[1])
+                self.preset_list[result[0]] = vsti_item
                 self.update_list()
             else:
                 simpledialog.messagebox.showinfo("Warning", "Please enter Name")
@@ -131,8 +142,17 @@ class main_view():
         self.update_ui()
 
     def select_item(self, evt):
+        self.update_info()
         self.update_ui()
 
+    def update_info(self):
+        self.presetinfo.delete(*self.presetinfo.get_children())
+        if len(self.presettree.selection()) > 0:
+            item = self.presettree.item(self.presettree.focus())
+            index = item["text"]
+            self.presetinfo.insert("", END, text="Name", values=(self.preset_list[index].preset_name,))
+            self.presetinfo.insert("", END, text="Plugin", values=(self.preset_list[index].chunk.plugin_name,))
+            self.presetinfo.insert("", END, text="Tags", values=(', '.join(self.preset_list[index].tags),))
 
     def update_list(self):
         self.presettree.delete(*self.presettree.get_children())
@@ -144,7 +164,7 @@ class main_view():
             if show:
                 self.presettree.insert("", END, 
                                         text=self.preset_list[preset].preset_name, 
-                                        values=(self.preset_list[preset].plugin_name,))
+                                        values=(self.preset_list[preset].chunk.plugin_name,))
 
     def update_ui(self):
         #======================== Update Save Database Button ====================

@@ -1,3 +1,4 @@
+from reaper.preset import save
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import simpledialog, filedialog
@@ -27,16 +28,24 @@ class ChoiceDialog(simpledialog.Dialog):
     def apply(self):
         self.selection = self._tree.item(self._tree.focus())
 
+
+
+def save_preset_dialog(parent):
+    save_dialog = SavePreset(parent)
+    cancelled = save_dialog.cancelled
+    result = save_dialog.selection
+    return cancelled, result
+
 class SavePreset(simpledialog.Dialog):
     def __init__(self, parent):
         self.selection = None
+        self.cancelled = False
         super().__init__(parent, title="Save Preset")
 
     def body(self, parent):
-        self._message = Label(parent, text="Please configure preset to save")
-        self._message.pack(expand=1, fill=BOTH)
-
-        self._entry = Entry(parent, text="Please configure preset to save")
+        self._entry_text = StringVar()
+        self._entry_text.trace("w", self.update_ui)
+        self._entry = Entry(parent, text="Please configure preset to save", textvariable=self._entry_text)
         self._entry.pack(expand=1, fill=BOTH,pady=5)
 
         self._frame = Frame(parent, relief=GROOVE)
@@ -50,11 +59,40 @@ class SavePreset(simpledialog.Dialog):
             cb.pack(padx=1, pady=2, anchor=W)
             self.checkboxes.append(checked)
 
+
+    def update_ui(self, *args):
+        if self._entry_text.get() != "":
+            self.btn_ok['state'] = NORMAL
+        else:
+            self.btn_ok['state'] = DISABLED
+
+
+    def buttonbox(self):
+        box = Frame(self)
+
+        self.btn_ok = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        self.btn_ok.pack(side=LEFT, padx=5, pady=5)
+        self.btn_ok['state'] = DISABLED
+
+        self.btn_cancel = Button(box, text="Cancel", width=10, command=self.cancel)
+        self.btn_cancel.pack(side=LEFT, padx=5, pady=5)
+
+        self.bind("<Return>", self.ok)
+        self.bind("<Escape>", self.cancel)
+
+        box.pack()
+
+    def ok(self):
+        self.cancelled = False
+        super().ok()
+
+
     def validate(self):
         return 1
 
     def apply(self):
-        result_dict = {}
+        result_list = []
         for tag, box in zip(self.tags,self.checkboxes) :
-            result_dict[tag] = box.get()
-        self.selection = [self._entry.get(), result_dict]
+            if box.get():
+                result_list.append(tag)
+        self.selection = [self._entry.get(), result_list]
