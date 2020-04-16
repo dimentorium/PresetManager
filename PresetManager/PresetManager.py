@@ -12,13 +12,6 @@ import core.ui as ui
 
 import copy
 
-def wrap(string, lenght=8):
-    return '\n'.join(textwrap.wrap(string, lenght))
-
-
-
-
-
 class main_view():
     def __init__(self):
         self.preset_list = {}
