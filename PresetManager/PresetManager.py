@@ -17,6 +17,7 @@ class main_view():
     def __init__(self):
         self.preset_list = {}
         self._search_filter = ""
+        self._selected_item = None
         self.root = Tk()
         self.root.title("Reaper Preset Manager")
         
@@ -65,7 +66,7 @@ class main_view():
         #Treeview for presets
         self.presettree = Treeview(self.root)
         self.presettree.grid(row=current_row, rowspan=8, columnspan=3, padx=5, pady=5, sticky='ew')
-        self.presettree.bind("<ButtonRelease-1>", self.select_item)
+        self.presettree.bind("<<TreeviewSelect>>", self.select_item)
         self.presettree["columns"] = ("Plugin")
         self.presettree.heading("#0", text="Preset")
         self.presettree.heading("Plugin", text="Plugin")
@@ -87,19 +88,14 @@ class main_view():
 
         self.update_ui()      
 
-        #self.simulate_db()  
-
-#--------------------------------------------------------------------------#
-#-------------------Search Function----------------------------------------#
-    def search(self, *args):
-        self._search_filter = self._entry_text.get()
-        self.update_list()
-        self.update_ui()
-    
-    def show(self):
         #keep window on top of all others
         self.root.wm_attributes("-topmost", 1)
         self.root.mainloop()
+
+    def search(self, *args):
+        self._search_filter = self._entry_text.get()
+        self.update_list()
+        self.update_ui()        
     
     def save_preset(self):
         project = reapy.Project()
@@ -120,9 +116,7 @@ class main_view():
 
 
     def load_preset(self):
-        item = self.presettree.item(self.presettree.focus())
-        index = item["text"]
-        rp.load(self.preset_list[index])
+        self._selected_item.load()
         self.update_ui()
 
     def save_database(self):
@@ -142,24 +136,25 @@ class main_view():
         self.update_ui()
 
     def select_item(self, evt):
+        selected_item = self.presettree.item(self.presettree.focus())
+        index = selected_item["text"]
+        self._selected_item = self.preset_list[index]
+
         self.update_info()
         self.update_ui()
 
     def update_info(self):
         self.presetinfo.delete(*self.presetinfo.get_children())
-        if len(self.presettree.selection()) > 0:
-            item = self.presettree.item(self.presettree.focus())
-            index = item["text"]
-            self.presetinfo.insert("", END, text="Name", values=(self.preset_list[index].preset_name,))
-            self.presetinfo.insert("", END, text="Plugin", values=(self.preset_list[index].chunk.plugin_name,))
-            self.presetinfo.insert("", END, text="Tags", values=(', '.join(self.preset_list[index].tags),))
+        if self._selected_item != None:
+            for key, value in self._selected_item.properties.items():
+                self.presetinfo.insert("", END, text=key, values=(value,))
 
     def update_list(self):
         self.presettree.delete(*self.presettree.get_children())
         for preset in self.preset_list:
             show = True
             if self._search_filter != "":
-                show = self._search_filter in self.preset_list[preset].preset_name
+                show = self.preset_list[preset].check_filter(self._search_filter)
 
             if show:
                 self.presettree.insert("", END, 
@@ -167,6 +162,8 @@ class main_view():
                                         values=(self.preset_list[preset].chunk.plugin_name,))
 
     def update_ui(self):
+        if len(self.presettree.selection()) == 0:
+            self._selected_item = None
         #======================== Update Save Database Button ====================
         if len(self.preset_list) == 0:
             self.btn_save_database['state'] = DISABLED
@@ -174,22 +171,14 @@ class main_view():
             self.btn_save_database['state'] = NORMAL
 
         #======================== Update Load Preset Button ====================
-        if len(self.presettree.selection()) == 0:
+        if self._selected_item == None:
             self.btn_load_preset['state'] = DISABLED
         else:
             self.btn_load_preset['state'] = NORMAL
 
-    def simulate_db(self):
-        newpreset = rp.save("test_db_")
-        for i in range(10000):
-            copy_preset = copy.copy(newpreset)
-            copy_preset.preset_name = "test_db_" + str(i)
-            self.preset_list[copy_preset.preset_name] = copy_preset
-        self.update_list()
 
-        
+#===========================Start Main Function================================#       
 mv = main_view()
-mv.show()
 
 
 
