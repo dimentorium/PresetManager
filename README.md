@@ -1,5 +1,8 @@
 # PresetManager
-Preset Manager or REAPER
+Preset Manager for REAPER for loading and saving VSTi Presets with tagging and search.
+![Demo Video](/documentation/demo.gif)
+
+
 
 # Installation (Windows)
 1. Install Python (currently working with 3.7.6) https://www.python.org/downloads/release/python-376/
