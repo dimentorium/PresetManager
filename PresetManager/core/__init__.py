@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Reaper Package.
+"""Core Package.
 
-This package contains modules for Reaper
+This package contains core modules for the preset manager
 
 Modules:
+    items: item classes that are displayed in the preset tree
+    ui: dialogs and ui elements
 
 Todo:
     *
 
 @author:         Philipp Noertersheuser
-@GIT Repository: https://dev.azure.com/ainysynth/_git/ainysynth
+@GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """

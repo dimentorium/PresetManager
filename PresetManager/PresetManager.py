@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CPreset Manager Main.
+"""Preset Manager Main.
 
 Main startup to run the Prese Manager
 
