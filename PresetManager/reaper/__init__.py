@@ -9,6 +9,6 @@ Todo:
     *
 
 @author:         Philipp Noertersheuser
-@GIT Repository: https://dev.azure.com/ainysynth/_git/ainysynth
+@GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
