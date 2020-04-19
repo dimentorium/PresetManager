@@ -1,47 +1,54 @@
+# -*- coding: utf-8 -*-
+"""Server module.
+
+Small TCP IP server to receive commands from Reaper
+
+Classes:
+    reaper_server: simple TCP/IP server
+
+Functions
+
+Todo:
+    * implement functions
+
+@author:         Philipp Noertersheuser
+@GIT Repository: https://github.com/dimentorium/PresetManager
+@License
+"""
 import socket
 import threading
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
 
-class server_Signals(QObject):
-    '''
-    Defines the signals available from a running worker thread.
+class reaper_server():
+    """reaper_server.
 
-    Supported signals are:
+    TCP/IP server waiting for commands from Reaper
 
-    finished
-        No data
-    
-    error
-        `tuple` (exctype, value, traceback.format_exc() )
-    
-    result
-        `object` data returned from processing, anything
+    Methods
+    -------
+        init: init class
+        run: start server and wait for messages
 
-    progress
-        `int` indicating % progress 
+    Properties
+    ----------
+        host: host address
+        port: TCP port to listen
+    """
 
-    '''
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
-    message = pyqtSignal(str)
+    def __init__(self):
+        """Init.
 
-class reaper_server(QRunnable):
-    def __init__(self, *args, **kwargs):
-        super(reaper_server, self).__init__()
-        self.args = args
-        self.kwargs = kwargs
+        Set TCP settings in class
+        """
+        # Standard loopback interface address (localhost)
+        self.__host = '127.0.0.1' 
+        # Port to listen on (non-privileged ports are > 1023) 
+        self.__port = 65432 
 
-        self.__host = '127.0.0.1'  # Standard loopback interface address (localhost)
-        self.__port = 65432        # Port to listen on (non-privileged ports are > 1023)
-        self.signals = server_Signals()
-        # Add the callback to our kwargs
-        self.kwargs['message_callback'] = self.signals.message   
-
-    @pyqtSlot()
     def run(self):
+        """Run.
+
+        Run server
+        """
         print("Starting Reaper Com Server")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.__host, self.__port))
@@ -59,4 +66,4 @@ class reaper_server(QRunnable):
                             print('Disconnected')
                             self.__connected = False
                         message = data.decode("utf-8")
-                        self.signals.message.emit(message)
+                        #implement function calls

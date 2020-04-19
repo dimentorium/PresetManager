@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+"""Render Module.
+
+Functions to render files in Reaper
+
+Functions
+    set_output_path: Set render path of project in project file
+    render_audio: perform rendering
+
+Todo:
+
+@author:         Philipp Noertersheuser
+@GIT Repository: https://github.com/dimentorium/PresetManager
+@License
+"""
 import reapy
 import rpp
 
@@ -13,6 +28,7 @@ def set_output_path(folder: str):
     """
     #reference to project
     project = reapy.Project()
+    #save project to not get the dialog
     project.save()
 
     #open project file
@@ -53,8 +69,9 @@ def render_audio(folder: str, preset_name: str) -> str:
     """
     #set renderpath in project file
     renderpath = folder + "\\" + preset_name + ".wav"
+    set_output_path(renderpath)
 
-    #set name of track,as rendring takes trackname for filename
+    #set name of track,as rendering takes trackname for filename
     project = reapy.Project()
     vst_track = project.tracks[0]
     vst_track.name = preset_name
@@ -62,7 +79,7 @@ def render_audio(folder: str, preset_name: str) -> str:
     #save project so changes get updated
     project.save()
 
-    #call rener action by ID
+    #call render action by ID
     reapy.perform_action(42230)
 
     print("Finished Rendering")
