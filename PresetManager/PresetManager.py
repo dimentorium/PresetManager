@@ -164,7 +164,7 @@ class main_view():
         self.update_ui()        
     
     def save_preset(self):
-        """save preset.
+        """Save preset.
 
         Saves the preset from the selected Reper Track and updates UI.
         If no track is selected, the user is warned.
