@@ -20,7 +20,6 @@ import reapy
 from reapy.core import track
 import rpp
 import base64
-import pandas as pd
 
 class reaper_preset_chunk:
     """Reaper Prest Chunk.
