@@ -92,7 +92,7 @@ def save(presetname: str) -> reaper_preset_chunk:
     selected_track = project.get_selected_track(0)
 
     #load configuration from selected track
-    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",500000,False)
+    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
     
     #parse track state chnk with RPP
     vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
@@ -133,7 +133,7 @@ def load(chunk: reaper_preset_chunk):
         selected_track.add_fx(chunk.plugin_dll)
 
     #read track state from selected track
-    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",500000,False)
+    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
     #parse data with RPP
     vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
     
