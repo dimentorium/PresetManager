@@ -167,6 +167,7 @@ class main_view():
         #keep window on top of all others
         glob.root = self.root
         self.root.wm_attributes("-topmost", 1)
+        self.root.after(500, self.new_database)
         self.root.mainloop()
 
 #============================================================#
@@ -210,8 +211,8 @@ class main_view():
         User is asked for folder where to save
         """
         #open file dialog to select database file and pickle data to file
-        filename = filedialog.asksaveasfilename(title = "Select file",filetypes = (("database","*.bin"),("all files","*.*")))
-        pickle.dump(self.preset_list, open(filename,"wb"))
+        dbfile = os.path.join(glob.database_folder, glob.database_name + ".bin")
+        pickle.dump(self.preset_list, open(dbfile,"wb"))
         self.update_ui()
 
     def load_database(self):
@@ -231,9 +232,13 @@ class main_view():
 
         Creates empty database
         """
-        self.preset_list = {}
-        self.update_list()
-        self.update_ui()
+        cancelled, database_name, database_folder = ui.new_database_dialog()
+        if not cancelled:
+            glob.database_name = database_name
+            glob.database_folder = database_folder
+            self.preset_list = {}
+            self.update_list()
+            self.update_ui()
 
     def select_item(self, evt):
         """select item.

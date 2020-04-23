@@ -29,17 +29,11 @@ def set_output_path(folder: str):
         folder: folder where to render audio
 
     """
-    reapy.perform_action(40859)
-    #reapy.open_project("C:\\Users\\phili\\Desktop\\PM\\PresetManager\\reaper\\renderproject.rpp")
-    #reference to project
-    #project = reapy.Project()
-    #save project to not get the dialog
-    #project.save()
+    
 
     #open project file
-    #project_file_path = project.path + "\\" + project.name
-    project_file_path = "C:\\Users\\phili\\Desktop\\PM\\PresetManager\\reaper\\renderproject.rpp"
-    project_file=open(project_file_path, "r+")
+    project_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "renderproject.rpp")
+    project_file = open(project_file_path, "r+")
     file_content = rpp.loads(project_file.read())
 
     #change render file setting
@@ -73,6 +67,9 @@ def render_audio(folder: str, preset_name: str, chunk) -> str:
     renderpath: full path to rendered audio
 
     """
+    #open new tab
+    reapy.perform_action(40859)
+
     #set renderpath in project file
     renderpath = folder + "\\" + preset_name + ".mp3"
     set_output_path(renderpath)

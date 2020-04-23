@@ -26,6 +26,124 @@ from tkinter import simpledialog, filedialog
 import core.items as items
 import core.globals as glob
 
+def new_database_dialog():
+    """Save Preset Dialog.
+
+    Wrapper function showing dialog and returning data
+
+    Parameters
+    ----------
+        parent: root frame calling dialog
+        
+    Returns:
+    -------
+        cancelled: True if dialog was cancelled false if dialog is OK
+        result: list with preset name and list of tags
+    """
+    #call dialog and read out returning values
+    database_dialog = NewDatabase()
+    cancelled = database_dialog.cancelled
+    name = database_dialog.database_name
+    folder = database_dialog.database_folder
+    return cancelled, name, folder
+
+class NewDatabase(simpledialog.Dialog):
+    """NewDatabase.
+
+    Dialog for creating new database
+
+    Methods
+    -------
+        init: init class and set properties
+        body: build user interface
+        validate: check if input is ok
+        apply: update return values
+
+    Properties
+    ----------
+        selection: selected item
+        items: list of items from which can be selected
+        text: title of dialog
+        message: label to show text message
+        tree: tree from which the item is selected
+    """
+
+    def __init__(self):
+        """Init.
+
+        Initialize class properties.
+        
+        Parameters
+        ----------
+            parent: parent frame calling dialog
+            title: title of dialog
+            text: message for user
+            items: list for selection
+        """
+        #init properties
+        self.cancelled = True
+        self.database_folder = ""
+        self.database_name = ""
+
+        #call parent function from tkinter
+        super().__init__(glob.root, title="Configure Database")
+
+    def body(self, parent):
+        """Body.
+
+        Builds user interface
+        
+        Parameters
+        ----------
+            parent: dialog root
+            
+        Returns:
+        -------
+            tree: tree for selection
+        """
+        #configure database name
+        self._var_name = StringVar()
+        self._entry_name = Entry(parent, text="Please enter database name", textvariable=self._var_name)
+        self._entry_name.pack(expand=1, fill=BOTH,pady=5)
+
+        #configure database folder
+        self._folder_name = StringVar()
+        self._entry_folder = Entry(parent, text="Please enter database folder", textvariable=self._folder_name)
+        self._entry_folder.pack(expand=1, fill=BOTH,pady=5)
+
+        self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder)
+        self.btn_folder.pack(expand=1, fill=BOTH,pady=5)
+
+    def select_folder(self):
+        self._folder_name.set(filedialog.askdirectory(title = "Select folder"))
+
+    def validate(self) -> int:
+        """Validate.
+
+        Function validating user data
+            
+        Returns:
+        -------
+            int: 1 for OK, 0 for not ok
+        """
+        return 1
+
+    def ok(self):
+        """OK.
+
+        Function called when OK is pressed
+        """
+        self.cancelled = False
+        super().ok()
+
+    def apply(self):
+        """apply.
+
+        Store selected data in selection.
+        """
+        self.database_folder = self._entry_folder.get()
+        self.database_name = self._entry_name.get()
+
 class ChoiceDialog(simpledialog.Dialog):
     """ChoiceDialog.
 
@@ -281,6 +399,6 @@ class SavePreset(simpledialog.Dialog):
                 self.__preset.tags.append(tag)
 
     def render_preset(self):
-        path = "C:\\Users\\phili\\Desktop\\Halion\\preview"
+        path = glob.database_folder
         renderfilepath = render.render_audio(path, self._entry.get(), self.__preset.chunk)
         return renderfilepath
