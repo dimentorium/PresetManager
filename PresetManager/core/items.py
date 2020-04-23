@@ -20,6 +20,11 @@ Todo:
 
 import collections
 import reaper.preset as rp
+import core.ui as ui
+from tkinter import simpledialog, filedialog
+from playsound import playsound
+
+
 
 class vstipreset():
     """vstipreset.
@@ -57,6 +62,7 @@ class vstipreset():
         self.type = "VSTi Preset"
         self.chunk = chunk
         self.tags = tags
+        self.preview_path = ""
 
     @property
     def properties(self) -> collections.OrderedDict:
@@ -73,6 +79,7 @@ class vstipreset():
         props["Type"] = self.type
         props["Plugin Name"] = self.chunk.plugin_name
         props["Tags"] = self.tags
+        props["Preview"] = self.preview_path
         return props
 
     def check_filter(self, filter: str) -> bool:
@@ -100,20 +107,38 @@ class vstipreset():
         Loading preset into Reaper.
         """
         rp.load(self.chunk)
+        
 
-    def save(self):
+    def save(self) -> bool:
         """save.
 
         Saving presets from Reaper.
         """
-        pass
+        result = False
+        self.chunk = rp.save()
+        if self.chunk is not None:
+            #open preset dialog and configure setting
+            cancelled = ui.save_preset_dialog(self)
+            if not cancelled:
+                result = True
+        else:
+            simpledialog.messagebox.showinfo("Warning", "Please select Track")
+
+        return result
+            
 
     def onclick(self):
         """onclick.
 
-        Action when item is selected.
+        Action when item is selected. Play Audio
         """
-        pass
+        #check that there is a correct path for playing audio
+        if self.preview_path != "":
+            #play audio
+            try:
+                playsound(self.preview_path, block=False)
+            except:
+                print("Could not play:" + self.preview_path)
 
     def ondoubleclick(self):
         """ondoubleclick.

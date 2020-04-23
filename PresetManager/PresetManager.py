@@ -17,6 +17,9 @@ Todo:
 """
 
 #======================== Imorts Section ====================#
+import sys
+import os
+
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import simpledialog, filedialog
@@ -25,6 +28,7 @@ import textwrap
 
 import pickle
 
+import core.globals as glob
 import reaper.preset as rp
 import reapy
 import core.ui as ui
@@ -77,76 +81,91 @@ class main_view():
         self._search_filter = ""
         self._selected_item = None
         self.root = Tk()
+        s = Style()
+        s.configure('new.TFrame', background='#7AC5CD')
+
         self.root.title("Reaper Preset Manager")
+        self._frame = Frame(self.root, style='new.TFrame')
+        self._frame.grid(row=0, column=0, sticky=E+W+N+S)
         
         current_row = 0
 
         #Buttons for handling database
-        self.btn_new_database = Button(self.root,text="New Database", command=self.new_database)
+        self.btn_new_database = Button(self._frame,text="New Database", command=self.new_database)
         self.btn_new_database.grid(row=current_row,column=0, padx=5, pady=5, sticky='ew')
 
-        self.btn_load_database = Button(self.root,text="Load Database", command=self.load_database)
+        self.btn_load_database = Button(self._frame,text="Load Database", command=self.load_database)
         self.btn_load_database.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
 
-        self.btn_save_database = Button(self.root,text="Save Database", command=self.save_database)
+        self.btn_save_database = Button(self._frame,text="Save Database", command=self.save_database)
         self.btn_save_database.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Separator
-        Separator(self.root,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Buttons for handling presets
-        self.btn_load_preset = Button(self.root,text="Load Preset", command=self.load_preset)
+        self.btn_load_preset = Button(self._frame,text="Load Preset", command=self.load_preset)
         self.btn_load_preset.grid(row=current_row,column=0, padx=5, pady=5, sticky='ew')
         
-        self.btn_save_preset = Button(self.root,text="Save Preset", command=self.save_preset)
+        self.btn_save_preset = Button(self._frame,text="Save Preset", command=self.save_preset)
         self.btn_save_preset.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Separator
-        Separator(self.root,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Search Field
-        Label(self.root,text="Search").grid(row=current_row, padx=5, column=0, sticky='w')
+        Label(self._frame,text="Search").grid(row=current_row, padx=5, column=0, sticky='w')
         
         self._entry_text = StringVar()
         self._entry_text.trace("w", self.search)
-        self.search_box = Entry(self.root, textvariable=self._entry_text)
+        self.search_box = Entry(self._frame, textvariable=self._entry_text)
         self.search_box.grid(row=current_row, column=1,columnspan=3, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Separator
-        Separator(self.root,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Treeview for presets
-        self.presettree = Treeview(self.root)
+        self.presettree = Treeview(self._frame)
         self.presettree.grid(row=current_row, rowspan=8, columnspan=3, padx=5, pady=5, sticky='ew')
         self.presettree.bind("<<TreeviewSelect>>", self.select_item)
         self.presettree["columns"] = ("Plugin")
         self.presettree.heading("#0", text="Preset")
         self.presettree.heading("Plugin", text="Plugin")
-        vsb = Scrollbar(self.root, orient="vertical", command=self.presettree.yview)
+        vsb = Scrollbar(self._frame, orient="vertical", command=self.presettree.yview)
         vsb.grid(row=current_row, rowspan=8, column=3, pady=5,sticky='nsw')
         self.presettree.configure(yscrollcommand=vsb.set)
         current_row +=8
 
         #Treeview for presets
-        self.presetinfo = Treeview(self.root)
-        self.presetinfo.grid(row=current_row, rowspan=2, columnspan=3, padx=5, pady=5, sticky='ew')
+        self.presetinfo = Treeview(self._frame)
+        self.presetinfo.grid(row=current_row, rowspan=2, columnspan=3, padx=5, pady=5, sticky='nesw')
         self.presetinfo["columns"] = ("Value")
         self.presetinfo.heading("#0", text="Property")
         self.presetinfo.heading("Value", text="Value")
         current_row +=4
 
         #Separator
-        Separator(self.root,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
 
         self.update_ui()      
 
+        for i in range(0, 4):
+            self._frame.columnconfigure(i, weight=1)
+
+        for i in range(0, 17):
+            self._frame.rowconfigure(i, weight=1)
+
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
         #keep window on top of all others
+        glob.root = self.root
         self.root.wm_attributes("-topmost", 1)
         self.root.mainloop()
 
@@ -166,26 +185,13 @@ class main_view():
     def save_preset(self):
         """Save preset.
 
-        Saves the preset from the selected Reper Track and updates UI.
+        Saves the preset from the selected Reaper Track and updates UI.
         If no track is selected, the user is warned.
         """
-        #select project and check if a track is selected
-        project = reapy.Project()
-        if project.n_selected_tracks > 0:
-            #open preset dialog and configure setting
-            cancelled, result = ui.save_preset_dialog(self.root)
-            if not cancelled:
-                #get chunk from selected track
-                newpreset = rp.save(result[0])
-                #create new item and add it to database
-                vsti_item = items.vstipreset(result[0], newpreset, result[1])
-                self.preset_list[result[0]] = vsti_item
-                self.update_list()
-            else:
-                simpledialog.messagebox.showinfo("Warning", "Please enter Name")
-        else:
-            simpledialog.messagebox.showinfo("Warning", "Please select Track")
-
+        newitem = items.vstipreset()
+        if newitem.save():
+            self.preset_list[newitem.preset_name] = newitem
+        self.update_list()
         self.update_ui()
             
     def load_preset(self):
@@ -242,6 +248,7 @@ class main_view():
         selected_item = self.presettree.item(self.presettree.focus())
         index = selected_item["text"]
         self._selected_item = self.preset_list[index]
+        self._selected_item.onclick()
 
         self.update_info()
         self.update_ui()
@@ -305,7 +312,3 @@ class main_view():
 
 #===========================Start Main Function================================#       
 mv = main_view()
-
-
-
-

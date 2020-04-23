@@ -48,13 +48,12 @@ class reaper_preset_chunk:
         Initialize all properties
         """
         self.raw = None
-        self.preset_name = "Preset"
         self.plugin_name = ""
         self.plugin_dll = ""
         self.vst_chunk = ""
         self.track_chunk = ""
 
-    def from_element(self, element, name: str, trackchunk = None):
+    def from_element(self, element, trackchunk = None):
         """From Element.
 
         Convert RPP elemtent to the state chunk
@@ -66,7 +65,6 @@ class reaper_preset_chunk:
             trackchunk: full track chunk from REAPY
         """
         self.raw = element
-        self.preset_name = name
         self.plugin_name = element.attrib[0]
         self.plugin_dll = element.attrib[1]
         self.vst_chunk = element[:]
@@ -74,7 +72,7 @@ class reaper_preset_chunk:
             self.track_chunk = trackchunk
 
 
-def save(presetname: str) -> reaper_preset_chunk:
+def save() -> reaper_preset_chunk:
     """Save.
 
     Saves a preset from selected track in Reaper
@@ -89,20 +87,20 @@ def save(presetname: str) -> reaper_preset_chunk:
     """
     #get references
     project = reapy.Project()
-    selected_track = project.get_selected_track(0)
+    if project.n_selected_tracks > 0:
+        selected_track = project.get_selected_track(0)
 
-    #load configuration from selected track
-    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
-    
-    #parse track state chnk with RPP
-    vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
-
-    #search for VST plugin data
-    preset_chunk = vst_track_chunk_parsed.find("FXCHAIN").find("VST")
-
-    #create new chunk
-    return_chunk = reaper_preset_chunk()
-    return_chunk.from_element(preset_chunk,presetname, vst_track_chunk)
+        #load configuration from selected track
+        vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
+        #parse track state chnk with RPP
+        vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
+        #search for VST plugin data
+        preset_chunk = vst_track_chunk_parsed.find("FXCHAIN").find("VST")
+        #create new chunk
+        return_chunk = reaper_preset_chunk()
+        return_chunk.from_element(preset_chunk, vst_track_chunk)
+    else:
+        return_chunk = None
 
     return return_chunk
 

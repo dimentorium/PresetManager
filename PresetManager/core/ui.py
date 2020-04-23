@@ -16,10 +16,15 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
+from core.globals import root
 from reaper.preset import save
+import reaper.render as render
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import simpledialog, filedialog
+
+import core.items as items
+import core.globals as glob
 
 class ChoiceDialog(simpledialog.Dialog):
     """ChoiceDialog.
@@ -110,7 +115,7 @@ class ChoiceDialog(simpledialog.Dialog):
 
 
 
-def save_preset_dialog(parent):
+def save_preset_dialog(preset: items.vstipreset):
     """Save Preset Dialog.
 
     Wrapper function showing dialog and returning data
@@ -125,10 +130,9 @@ def save_preset_dialog(parent):
         result: list with preset name and list of tags
     """
     #call dialog and read out returning values
-    save_dialog = SavePreset(parent)
+    save_dialog = SavePreset(preset)
     cancelled = save_dialog.cancelled
-    result = save_dialog.selection
-    return cancelled, result
+    return cancelled
 
 class SavePreset(simpledialog.Dialog):
     """ChoiceDialog.
@@ -159,7 +163,7 @@ class SavePreset(simpledialog.Dialog):
         btn_cancel: button for cancel
     """
 
-    def __init__(self, parent):
+    def __init__(self, preset: items.vstipreset):
         """Init.
 
         Initialize class properties.
@@ -170,7 +174,8 @@ class SavePreset(simpledialog.Dialog):
         """
         self.selection = None
         self.cancelled = False
-        super().__init__(parent, title="Save Preset")
+        self.__preset = preset
+        super().__init__(glob.root, title="Save Preset")
 
     def body(self, parent):
         """Body.
@@ -187,12 +192,17 @@ class SavePreset(simpledialog.Dialog):
         self._entry = Entry(parent, text="Please configure preset to save", textvariable=self._entry_text)
         self._entry.pack(expand=1, fill=BOTH,pady=5)
 
+        #configure render checkbox
+        self._entry_render = BooleanVar()
+        self._cb_render = Checkbutton(parent,text="Render", variable=self._entry_render)
+        self._cb_render.pack(padx=1, pady=2, anchor=W)
+
         #add frame for checkboxes
         self._frame = Frame(parent, relief=GROOVE)
         self._frame.pack(expand=1, fill=BOTH)
 
         #create checkboxes for tags. List is just for demo purposes
-        self.tags = ["string","brass","synth"]
+        self.tags = ["string", "brass", "synth"]
         self.checkboxes = []
         for tag in self.tags:
             #create a var that is later used for getting status of checboxes
@@ -259,9 +269,18 @@ class SavePreset(simpledialog.Dialog):
 
         Store selection in properties for usage
         """
-        result_list = []
+        self.__preset.preset_name = self._entry.get()
+        self.__preset.tags = []
+
+        if self._entry_render.get():
+            self.__preset.preview_path = self.render_preset()
+
         #check which tags are selected an store them with presetname
         for tag, box in zip(self.tags,self.checkboxes) :
             if box.get():
-                result_list.append(tag)
-        self.selection = [self._entry.get(), result_list]
+                self.__preset.tags.append(tag)
+
+    def render_preset(self):
+        path = "C:\\Users\\phili\\Desktop\\Halion\\preview"
+        renderfilepath = render.render_audio(path, self._entry.get(), self.__preset.chunk)
+        return renderfilepath
