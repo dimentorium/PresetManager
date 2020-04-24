@@ -166,6 +166,9 @@ class main_view():
 
         #keep window on top of all others
         glob.root = self.root
+
+        
+
         self.root.wm_attributes("-topmost", 1)
         self.root.after(500, self.new_database)
         self.root.mainloop()
@@ -315,5 +318,27 @@ class main_view():
             self.btn_load_preset['state'] = NORMAL
 
 
-#===========================Start Main Function================================#       
-mv = main_view()
+#===========================Start Main Function================================#    
+def main():
+    """Start GUI application.
+
+    Parameters
+    ----------
+    none
+
+    Returns
+    -------
+    none
+
+    """
+    #set application folder
+    glob.application_folder = os.path.dirname(os.path.realpath(__file__))
+
+    #read tags from file
+    with open(os.path.join(glob.application_folder, "item_tags.txt")) as f:
+        glob.item_tags = f.read().splitlines()
+
+    mv = main_view()
+
+#make sure to call main function
+main()

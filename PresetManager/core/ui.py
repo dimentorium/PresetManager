@@ -316,18 +316,24 @@ class SavePreset(simpledialog.Dialog):
         self._cb_render.pack(padx=1, pady=2, anchor=W)
 
         #add frame for checkboxes
-        self._frame = Frame(parent, relief=GROOVE)
+        self._frame = Frame(parent, relief=GROOVE, padding=5)
         self._frame.pack(expand=1, fill=BOTH)
 
         #create checkboxes for tags. List is just for demo purposes
-        self.tags = ["string", "brass", "synth"]
+        self.tags = glob.item_tags
         self.checkboxes = []
+        row = 0
+        column = 0
         for tag in self.tags:
             #create a var that is later used for getting status of checboxes
             checked = IntVar()
             cb = Checkbutton(self._frame, text=tag, variable=checked)
-            cb.pack(padx=1, pady=2, anchor=W)
+            cb.grid(row=row, column=column, sticky='ew')
             self.checkboxes.append(checked)
+            column += 1
+            if column >= 3:
+                column = 0
+                row += 1
 
 
     def update_ui(self, *args):
