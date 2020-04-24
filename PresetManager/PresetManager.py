@@ -17,7 +17,6 @@ Todo:
 """
 
 #======================== Imorts Section ====================#
-import sys
 import os
 
 from tkinter import *
@@ -85,7 +84,7 @@ class main_view():
         s.configure('new.TFrame', background='#7AC5CD')
 
         self.root.title("Reaper Preset Manager")
-        self._frame = Frame(self.root, style='new.TFrame')
+        self._frame = Frame(self.root)
         self._frame.grid(row=0, column=0, sticky=E+W+N+S)
         
         current_row = 0
@@ -124,23 +123,23 @@ class main_view():
         self._entry_text.trace("w", self.search)
         self.search_box = Entry(self._frame, textvariable=self._entry_text)
         self.search_box.grid(row=current_row, column=1,columnspan=3, padx=5, pady=5, sticky='ew')
-        current_row +=1
+        current_row += 1
 
         #Separator
-        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame, orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Treeview for presets
         self.presettree = Treeview(self._frame)
-        self.presettree.grid(row=current_row, rowspan=8, columnspan=3, padx=5, pady=5, sticky='ew')
+        self.presettree.grid(row=current_row, rowspan=8, columnspan=3, padx=5, pady = 5, sticky = 'ew')
         self.presettree.bind("<<TreeviewSelect>>", self.select_item)
         self.presettree["columns"] = ("Plugin")
         self.presettree.heading("#0", text="Preset")
         self.presettree.heading("Plugin", text="Plugin")
         vsb = Scrollbar(self._frame, orient="vertical", command=self.presettree.yview)
-        vsb.grid(row=current_row, rowspan=8, column=3, pady=5,sticky='nsw')
-        self.presettree.configure(yscrollcommand=vsb.set)
-        current_row +=8
+        vsb.grid(row = current_row, rowspan = 8, column = 3, pady = 5, sticky ='nsw')
+        self.presettree.configure(yscrollcommand = vsb.set)
+        current_row += 8
 
         #Treeview for presets
         self.presetinfo = Treeview(self._frame)
@@ -148,10 +147,10 @@ class main_view():
         self.presetinfo["columns"] = ("Value")
         self.presetinfo.heading("#0", text="Property")
         self.presetinfo.heading("Value", text="Value")
-        current_row +=4
+        current_row += 4
 
         #Separator
-        Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
+        Separator(self._frame, orient = "horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
 
         self.update_ui()      
 
@@ -166,10 +165,9 @@ class main_view():
 
         #keep window on top of all others
         glob.root = self.root
-
-        
-
         self.root.wm_attributes("-topmost", 1)
+
+        #call new database after half second to select
         self.root.after(500, self.new_database)
         self.root.mainloop()
 
@@ -184,8 +182,8 @@ class main_view():
         #get string from entry field and use for filtering database
         self._search_filter = self._entry_text.get()
         self.update_list()
-        self.update_ui()        
-    
+        self.update_ui()
+
     def save_preset(self):
         """Save preset.
 
@@ -197,7 +195,7 @@ class main_view():
             self.preset_list[newitem.preset_name] = newitem
         self.update_list()
         self.update_ui()
-            
+
     def load_preset(self):
         """load.
 
@@ -338,7 +336,8 @@ def main():
     with open(os.path.join(glob.application_folder, "item_tags.txt")) as f:
         glob.item_tags = f.read().splitlines()
 
-    mv = main_view()
+    #start UI
+    glob.main_window = main_view()
 
 #make sure to call main function
 main()
