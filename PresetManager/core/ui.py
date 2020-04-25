@@ -61,24 +61,15 @@ class NewDatabase(simpledialog.Dialog):
 
     Properties
     ----------
-        selection: selected item
-        items: list of items from which can be selected
-        text: title of dialog
-        message: label to show text message
-        tree: tree from which the item is selected
+        cancelled: status of dialog
+        database_folder: folder of current database
+        database_name: name of database
     """
 
     def __init__(self):
         """Init.
 
         Initialize class properties.
-        
-        Parameters
-        ----------
-            parent: parent frame calling dialog
-            title: title of dialog
-            text: message for user
-            items: list for selection
         """
         #init properties
         self.cancelled = True
@@ -96,10 +87,6 @@ class NewDatabase(simpledialog.Dialog):
         Parameters
         ----------
             parent: dialog root
-            
-        Returns:
-        -------
-            tree: tree for selection
         """
         #configure database name
         self._var_name = StringVar()
@@ -107,15 +94,33 @@ class NewDatabase(simpledialog.Dialog):
         self._entry_name.pack(expand=1, fill=BOTH,pady=5)
 
         #configure database folder
-        self._folder_name = StringVar()
-        self._entry_folder = Entry(parent, text="Please enter database folder", textvariable=self._folder_name)
-        self._entry_folder.pack(expand=1, fill=BOTH,pady=5)
+        self._lbl_folder = Label(parent, relief=GROOVE)
+        self._lbl_folder.pack(expand=1, fill=BOTH, pady=5)
 
         self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder)
         self.btn_folder.pack(expand=1, fill=BOTH,pady=5)
 
+    def update_ui(self, *args):
+        """Update UI.
+
+        Update status of control elements according to selection
+        
+        Parameters
+        ----------
+            args: evt arguments set by the tkinter framework
+        """
+        #update state of OK button according to preset name
+        if self._lbl_folder['text'] != "":
+            self.btn_ok['state'] = NORMAL
+        else:
+            self.btn_ok['state'] = DISABLED
+
     def select_folder(self):
-        self._folder_name.set(filedialog.askdirectory(title = "Select folder"))
+        """Select Folder.
+
+        Open Dialog to select folder for database
+        """
+        self._lbl_folder['text'] = filedialog.askdirectory(title="Select folder")
 
     def validate(self) -> int:
         """Validate.
@@ -141,7 +146,7 @@ class NewDatabase(simpledialog.Dialog):
 
         Store selected data in selection.
         """
-        self.database_folder = self._entry_folder.get()
+        self.database_folder = self._lbl_folder['text']
         self.database_name = self._entry_name.get()
 
 class ChoiceDialog(simpledialog.Dialog):

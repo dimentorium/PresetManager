@@ -100,6 +100,12 @@ class main_view():
         self.btn_save_database.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
+        #Database Name
+        Label(self._frame,text="Database").grid(row=current_row, padx=5, column=0, sticky='w')
+        self.lbl_database = Label(self._frame, relief=GROOVE)
+        self.lbl_database.grid(row=current_row, column=1, columnspan=4, padx=5, pady=5, sticky='ew')
+        current_row +=1
+
         #Separator
         Separator(self._frame,orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
         current_row +=1
@@ -127,7 +133,7 @@ class main_view():
 
         #Separator
         Separator(self._frame, orient="horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
-        current_row +=1
+        current_row += 1
 
         #Treeview for presets
         self.presettree = Treeview(self._frame)
@@ -152,7 +158,7 @@ class main_view():
         #Separator
         Separator(self._frame, orient = "horizontal").grid(row=current_row, columnspan=4, padx=5, pady=5, sticky='ew')
 
-        self.update_ui()      
+        self.update_ui()  
 
         for i in range(0, 4):
             self._frame.columnconfigure(i, weight=1)
@@ -298,6 +304,7 @@ class main_view():
 
         Updates status of controls based on current selectios
         """
+        self.lbl_database['text'] = glob.database_folder + "\\" + glob.database_name
 
         #check if an item in tree is selected, if not reset internal variable
         if len(self.presettree.selection()) == 0:
@@ -333,7 +340,7 @@ def main():
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
 
     #read tags from file
-    with open(os.path.join(glob.application_folder, "item_tags.txt")) as f:
+    with open(glob.tag_file()) as f:
         glob.item_tags = f.read().splitlines()
 
     #start UI

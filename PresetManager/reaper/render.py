@@ -18,6 +18,7 @@ import rpp
 import os
 import reaper.preset as rp
 import time
+import core.globals as glob
 
 def set_output_path(folder: str):
     """Set Render Path.
@@ -32,7 +33,7 @@ def set_output_path(folder: str):
     
 
     #open project file
-    project_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "renderproject.rpp")
+    project_file_path = glob.render_file()
     project_file = open(project_file_path, "r+")
     file_content = rpp.loads(project_file.read())
 
