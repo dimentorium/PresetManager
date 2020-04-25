@@ -1,6 +1,6 @@
 # PresetManager
 Preset Manager for REAPER for loading and saving VSTi Presets with tagging and search.
-![Demo Video](/documentation/demo.gif)
+![Demo Video](/documentation/200422_demo.gif)
 
 
 
