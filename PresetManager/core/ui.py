@@ -90,6 +90,7 @@ class NewDatabase(simpledialog.Dialog):
         """
         #configure database name
         self._var_name = StringVar()
+        self._var_name.trace("w", self.update_ui)
         self._entry_name = Entry(parent, text="Please enter database name", textvariable=self._var_name)
         self._entry_name.pack(expand=1, fill=BOTH,pady=5)
 
@@ -99,6 +100,26 @@ class NewDatabase(simpledialog.Dialog):
 
         self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder)
         self.btn_folder.pack(expand=1, fill=BOTH,pady=5)
+
+    def buttonbox(self):
+        """Buttonbox.
+
+        Build the standard button box for dialog. This just overrides the tkinter
+        function to give access to the buttons for setting state
+        """
+        box = Frame(self)
+
+        self.btn_ok = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        self.btn_ok.pack(side=LEFT, padx=5, pady=5)
+        self.btn_ok['state'] = DISABLED
+
+        self.btn_cancel = Button(box, text="Cancel", width=10, command=self.cancel)
+        self.btn_cancel.pack(side=LEFT, padx=5, pady=5)
+
+        self.bind("<Return>", self.ok)
+        self.bind("<Escape>", self.cancel)
+
+        box.pack()
 
     def update_ui(self, *args):
         """Update UI.
@@ -110,7 +131,7 @@ class NewDatabase(simpledialog.Dialog):
             args: evt arguments set by the tkinter framework
         """
         #update state of OK button according to preset name
-        if self._lbl_folder['text'] != "":
+        if self._lbl_folder['text'] != "" and self._var_name.get() != "":
             self.btn_ok['state'] = NORMAL
         else:
             self.btn_ok['state'] = DISABLED
@@ -121,6 +142,7 @@ class NewDatabase(simpledialog.Dialog):
         Open Dialog to select folder for database
         """
         self._lbl_folder['text'] = filedialog.askdirectory(title="Select folder")
+        self.update_ui()
 
     def validate(self) -> int:
         """Validate.
@@ -147,7 +169,7 @@ class NewDatabase(simpledialog.Dialog):
         Store selected data in selection.
         """
         self.database_folder = self._lbl_folder['text']
-        self.database_name = self._entry_name.get()
+        self.database_name = self._entry_name.get() + ".bin"
 
 class ChoiceDialog(simpledialog.Dialog):
     """ChoiceDialog.

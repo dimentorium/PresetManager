@@ -18,6 +18,7 @@ Todo:
 
 #======================== Imorts Section ====================#
 import os
+import logging
 
 from tkinter import *
 from tkinter.ttk import *
@@ -173,6 +174,7 @@ class main_view():
         glob.root = self.root
         self.root.wm_attributes("-topmost", 1)
 
+        logging.debug('Starting UI')
         #call new database after half second to select
         self.root.after(500, self.new_database)
         self.root.mainloop()
@@ -198,6 +200,7 @@ class main_view():
         """
         newitem = items.vstipreset()
         if newitem.save():
+            logging.debug('Saving Preset: ' + newitem.preset_name)
             self.preset_list[newitem.preset_name] = newitem
         self.update_list()
         self.update_ui()
@@ -209,6 +212,7 @@ class main_view():
         """
         #call load function from selected item
         self._selected_item.load()
+        logging.debug('Loading Preset: ' + self._selected_item.preset_name)
         self.update_ui()
 
     def save_database(self):
@@ -218,7 +222,8 @@ class main_view():
         User is asked for folder where to save
         """
         #open file dialog to select database file and pickle data to file
-        dbfile = os.path.join(glob.database_folder, glob.database_name + ".bin")
+        dbfile = os.path.join(glob.database_folder, glob.database_name)
+        logging.debug('Saving Database: ' + dbfile)
         pickle.dump(self.preset_list, open(dbfile,"wb"))
         self.update_ui()
 
@@ -230,6 +235,7 @@ class main_view():
         """
         #open file dialog to select database file and pickle data from file
         filename = filedialog.askopenfilename(title = "Select file",filetypes = (("database","*.bin"),("all files","*.*")))
+        logging.debug('Saving Database: ' + filename)
         self.preset_list = pickle.load( open( filename, "rb" ) )
         self.update_list()
         self.update_ui()
@@ -242,10 +248,12 @@ class main_view():
         cancelled, database_name, database_folder = ui.new_database_dialog()
         if not cancelled:
             glob.database_name = database_name
-            glob.database_folder = database_folder
+            glob.database_folder = database_folder.replace("/","\\")
+            logging.debug('New Database: ' + glob.database_name)
             self.preset_list = {}
             self.update_list()
             self.update_ui()
+            self.save_database()
 
     def select_item(self, evt):
         """select item.
@@ -336,8 +344,11 @@ def main():
     none
 
     """
+    logging.basicConfig(filename='preset_manager.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
+    logging.debug('Starting Preset manager main')
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
+    logging.debug('Setting Application Path: ' + glob.application_folder)
 
     #read tags from file
     with open(glob.tag_file()) as f:
