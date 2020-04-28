@@ -23,6 +23,7 @@ import reaper.preset as rp
 import core.ui as ui
 from tkinter import simpledialog, filedialog
 from playsound import playsound
+import logging
 
 
 
@@ -136,9 +137,10 @@ class vstipreset():
         if self.preview_path != "":
             #play audio
             try:
+                logging.debug("Playing: " + self.preview_path)
                 playsound(self.preview_path, block=False)
             except:
-                print("Could not play:" + self.preview_path)
+                logging.debug("Could not play:" + self.preview_path)
 
     def ondoubleclick(self):
         """ondoubleclick.

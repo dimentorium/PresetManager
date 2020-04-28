@@ -78,6 +78,7 @@ class NewDatabase(simpledialog.Dialog):
 
         #call parent function from tkinter
         super().__init__(glob.root, title="Configure Database")
+        
 
     def body(self, parent):
         """Body.
@@ -91,15 +92,16 @@ class NewDatabase(simpledialog.Dialog):
         #configure database name
         self._var_name = StringVar()
         self._var_name.trace("w", self.update_ui)
-        self._entry_name = Entry(parent, text="Please enter database name", textvariable=self._var_name)
+        self._entry_name = Entry(parent, text="Please enter database name", textvariable=self._var_name, width=60)
         self._entry_name.pack(expand=1, fill=BOTH,pady=5)
 
         #configure database folder
-        self._lbl_folder = Label(parent, relief=GROOVE)
+        self._lbl_folder = Label(parent, relief=GROOVE, width=60)
         self._lbl_folder.pack(expand=1, fill=BOTH, pady=5)
 
-        self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder)
+        self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder, width=60)
         self.btn_folder.pack(expand=1, fill=BOTH,pady=5)
+        
 
     def buttonbox(self):
         """Buttonbox.

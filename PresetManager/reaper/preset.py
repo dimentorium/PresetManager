@@ -20,6 +20,7 @@ import reapy
 from reapy.core import track
 import rpp
 import base64
+import logging
 
 class reaper_preset_chunk:
     """Reaper Prest Chunk.
@@ -90,6 +91,7 @@ def save() -> reaper_preset_chunk:
     if project.n_selected_tracks > 0:
         selected_track = project.get_selected_track(0)
 
+        logging.debug('Storing preset from: ' + selected_track.name + "|" + project.name)
         #load configuration from selected track
         vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
         #parse track state chnk with RPP
@@ -100,6 +102,7 @@ def save() -> reaper_preset_chunk:
         return_chunk = reaper_preset_chunk()
         return_chunk.from_element(preset_chunk, vst_track_chunk)
     else:
+        logging.debug('No track selected saving preset')
         return_chunk = None
 
     return return_chunk
@@ -141,4 +144,5 @@ def load(chunk: reaper_preset_chunk):
     #convert to writeable chunk
     new_chunk = rpp.dumps(vst_track_chunk_parsed)
     #set new chunk to track
-    reapy.reascript_api.SetTrackStateChunk(selected_track.id,new_chunk,False)
+    reapy.reascript_api.SetTrackStateChunk(selected_track.id, new_chunk,False)
+    logging.debug('Setting preset to: ' + selected_track.name + "|" + project.name)

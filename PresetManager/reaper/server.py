@@ -17,6 +17,7 @@ Todo:
 """
 import socket
 import threading
+import logging
 
 class reaper_server():
     """reaper_server.
@@ -39,6 +40,7 @@ class reaper_server():
 
         Set TCP settings in class
         """
+        logging.debug("Server started")
         # Standard loopback interface address (localhost)
         self.__host = '127.0.0.1' 
         # Port to listen on (non-privileged ports are > 1023) 
@@ -53,15 +55,15 @@ class reaper_server():
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.__host, self.__port))
             while True:
-                #print("Waiting")
+                logging.debug("Waiting")
                 s.listen()
                 conn, addr = s.accept()
                 with conn:
                     self.__connected = True
-                    #print('Connected by', addr)
+                    logging.debug('Connected by' + addr)
                     while self.__connected:
                         data = conn.recv(1024)
-                        #print(data)
+                        logging.debug("Server" + str(data))
                         if not data:
                             print('Disconnected')
                             self.__connected = False

@@ -19,6 +19,7 @@ import os
 import reaper.preset as rp
 import time
 import core.globals as glob
+import logging
 
 def set_output_path(folder: str):
     """Set Render Path.
@@ -30,8 +31,7 @@ def set_output_path(folder: str):
         folder: folder where to render audio
 
     """
-    
-
+    logging.debug('Setting Render Path: ' + folder)
     #open project file
     project_file_path = glob.render_file()
     project_file = open(project_file_path, "r+")
@@ -72,6 +72,7 @@ def render_audio(folder: str, preset_name: str, chunk) -> str:
     reapy.perform_action(40859)
 
     #set renderpath in project file
+    logging.debug('Rendering: ' + preset_name)
     renderpath = folder + "\\" + preset_name + ".mp3"
     set_output_path(renderpath)
 
