@@ -345,7 +345,7 @@ def main():
 
     """
     logging.basicConfig(filename='preset_manager.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
-    logging.debug('Starting Preset manager main')
+    logging.debug('Starting Preset manager main, V0.0.1, 28.04.2020')
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
     logging.debug('Setting Application Path: ' + glob.application_folder)
