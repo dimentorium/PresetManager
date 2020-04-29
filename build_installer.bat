@@ -1,0 +1,1 @@
+pyinstaller -y -F -w  "C:/Users/phili/Desktop/PM/Installer/Installer.py"
