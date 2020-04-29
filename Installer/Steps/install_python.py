@@ -56,8 +56,8 @@ class install_python(Frame):
         print("Unzipping python")
         installation_folder = self._lbl_reaper_folder['text'] + "\\Python"
         installation_folder = installation_folder.replace("/","\\")
-        #with zipfile.ZipFile(glob.pm_zip, 'r') as zip_ref:
-        #    zip_ref.extractall(installation_folder)
+        with zipfile.ZipFile(glob.python_zip, 'r') as zip_ref:
+            zip_ref.extractall(installation_folder)
 
         #set keys in Reaper.ini file and write config
         Config = configparser.ConfigParser()

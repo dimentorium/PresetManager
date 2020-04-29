@@ -27,4 +27,3 @@ class install_welcome(Frame):
 
     def perform_action(self):
         print("Starting Installation")
-        pass
