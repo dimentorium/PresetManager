@@ -1,16 +1,11 @@
 from tkinter import *
 from tkinter.ttk import *
-from tkinter.constants import DISABLED, GROOVE, NORMAL
-from tkinter import simpledialog, filedialog
-import core.globals as glob
-import os
-import zipfile
-from pathlib import Path
-import configparser
+import logging
 
 class install_welcome(Frame):
     def __init__(self, parent):
         super().__init__(parent)
+        logging.debug("Starting Step: Welcome")
 
         header = Label(self, text="Install Python portable installation and Preset Manager for Reaper")
         header.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
@@ -26,4 +21,4 @@ class install_welcome(Frame):
 
 
     def perform_action(self):
-        print("Starting Installation")
+        logging.debug("Starting Installation")

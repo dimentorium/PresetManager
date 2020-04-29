@@ -10,6 +10,7 @@ from Steps.install_reapy import install_reapy
 from Steps.install_welcome import install_welcome
 from Steps.install_presetmanager import install_presetmanager
 from Steps.install_finished import install_finished
+import logging
 
 class Wizard():
     def __init__(self):
@@ -50,6 +51,7 @@ class Wizard():
         # Positions the window in the center of the page.
         self.root.geometry("+{}+{}".format(positionRight, positionDown))
 
+        logging.debug("Starting Main Loop")
         self.root.mainloop()
 
     def show_step(self, step):
@@ -59,6 +61,7 @@ class Wizard():
 
         self.step_no = step
         self.current_step = self.steps[step](self.content_frame)
+        logging.debug("Current Step: " + str(type(self.current_step)))
         self.current_step.pack(fill="both", expand=True)
         
         if step == 0:
@@ -80,20 +83,28 @@ class Wizard():
             self.finish_button["state"] = DISABLED
 
     def next(self):
+        logging.debug("Performing Action: " + str(type(self.current_step)))
         self.current_step.perform_action()
         self.show_step(self.step_no + 1)
 
     def back(self):
+        logging.debug("Stepping Back")
         self.show_step(self.step_no - 1)
 
     def finish(self):
-        print("Closing Installer")
+        logging.debug("Closing Installer")
         self.root.quit()
         self.root.destroy()
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='installer.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
+    logging.debug('Starting Preset manager Installer, V0.0.1, 29.04.2020')
+
+    logging.debug('Setting Application Folder: ' + os.path.dirname(os.path.realpath(__file__)))
     glob.set_application_folder(os.path.dirname(os.path.realpath(__file__)))
+
+    logging.debug('Starting UI')
     wiz = Wizard()
-    print("Installer finished")
+    logging.debug("Installer finished")
     
