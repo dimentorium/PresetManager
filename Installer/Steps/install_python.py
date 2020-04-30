@@ -67,30 +67,32 @@ class install_python(Frame):
         logging.debug("Setting keys in: " + self._ini_file)
         Config = configparser.ConfigParser()
         Config.read(self._ini_file)
-        Config.set("REAPER", "pythonlibpath64", installation_folder)
-        Config.set("REAPER", "pythonlibdll64", "python37.dll")
-        Config.set("REAPER", "reascript", "1")
+        Config.set(Config.sections()[0], "pythonlibpath64", installation_folder)
+        Config.set(Config.sections()[0], "pythonlibdll64", "python37.dll")
+        Config.set(Config.sections()[0], "reascript", "1")
 
-        with open(self._ini_file, 'w') as configfile:
-            Config.write(configfile)
+        try:
+            with open(self._ini_file, 'w') as configfile:
+                Config.write(configfile)
+        except Exception as e:
+            logging.debug("Error installing Python: " + str(e))
 
     def check_ini(self):
-        if os.path.isfile(str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"):
-            logging.debug ("Normal installation found:" + self._selected_folder)
-            self._lbl_reaper_ini["text"] = str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"
-            self._lbl_reaper_install["text"] = "Normal Installation"
-            self._ini_file = str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"
-            
-        elif os.path.isfile(self._selected_folder + "\\reaper.ini"):
+        if os.path.isfile(self._selected_folder + "\\reaper.ini"):
             logging.debug ("Portable installation found:" + self._selected_folder)
             self._lbl_reaper_ini["text"] = self._selected_folder + "\\reaper.ini"
             self._lbl_reaper_install["text"] = "Portable Installation"
             self._ini_file = self._selected_folder + "\\reaper.ini"
+        elif os.path.isfile(str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"):
+            logging.debug ("Normal installation found:" + self._selected_folder)
+            self._lbl_reaper_ini["text"] = str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"
+            self._lbl_reaper_install["text"] = "Normal Installation"
+            self._ini_file = str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"
 
         if self._ini_file != "":
             Config = configparser.ConfigParser()
             Config.read(self._ini_file)
-            ppath = Config.has_option("reaper", "pythonlibpath64")
-            plib = Config.has_option("reaper", "pythonlibdll64")
+            ppath = Config.has_option(Config.sections()[0], "pythonlibpath64")
+            plib = Config.has_option(Config.sections()[0], "pythonlibdll64")
             if ppath and plib:
                 logging.debug("Found Python Configuration")

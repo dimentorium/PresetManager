@@ -83,9 +83,12 @@ class Wizard():
             self.finish_button["state"] = DISABLED
 
     def next(self):
-        logging.debug("Performing Action: " + str(type(self.current_step)))
-        self.current_step.perform_action()
-        self.show_step(self.step_no + 1)
+        try:
+            logging.debug("Performing Action: " + str(type(self.current_step)))
+            self.current_step.perform_action()
+            self.show_step(self.step_no + 1)
+        except Exception as e:
+            logging.debug("Error: " + str(e))
 
     def back(self):
         logging.debug("Stepping Back")

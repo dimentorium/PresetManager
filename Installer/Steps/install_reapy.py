@@ -24,12 +24,17 @@ class install_reapy(Frame):
         #configure label and button to select Reaper ini
         self._lbl_reaper_info = Label(self, text="""Instruction for installing REAPY:
                                                     1. Start Reaper
-                                                    2. Menu => Actions
-                                                    3. Click "Show Actions List"
-                                                    4. Click Button "Load" 
-                                                    5. Open file from above
-                                                    6. Click Button "Run"
-                                                    7. Restart Reaper and click "Validate" Button
+                                                    2. Menu => Options => Preferences
+                                                    3. Goto Plugins => Reascript
+                                                    4. Check "Enable Python"
+                                                    5. Click Apply
+                                                    =================================
+                                                    6. Menu => Actions
+                                                    7. Click "Show Actions List"
+                                                    8. Click Button "Load" 
+                                                    9. Open file from above
+                                                    10. Click Button "Run"
+                                                    11. Restart Reaper and click "Validate" Button
                                                     """)
         self._lbl_reaper_info.grid(row=4, column=0, columnspan=4, sticky="nsew", padx=5, pady=5)
 
@@ -43,6 +48,7 @@ class install_reapy(Frame):
         pass
 
     def validate(self):
+        messagebox.showinfo("Restart Reaper", "Please make sure to restart REAPER before validating REAPY")
         logging.debug("Validating REAPY")
         try:
             import reapy
