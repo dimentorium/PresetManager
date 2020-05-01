@@ -33,6 +33,7 @@ import reaper.preset as rp
 import reapy
 import core.ui as ui
 import core.items as items
+from core import tags
 #============================================================#
 
 class main_view():
@@ -350,8 +351,8 @@ def main():
     logging.debug('Setting Application Path: ' + glob.application_folder)
 
     #read tags from file
-    with open(glob.tag_file()) as f:
-        glob.item_tags = f.read().splitlines()
+    tags.load()
+    tags.save()
 
     #start UI
     glob.main_window = main_view()

@@ -25,6 +25,7 @@ from tkinter import simpledialog, filedialog
 
 import core.items as items
 import core.globals as glob
+from core import tags
 
 def new_database_dialog():
     """Save Preset Dialog.
@@ -349,7 +350,7 @@ class SavePreset(simpledialog.Dialog):
         self._frame.pack(expand=1, fill=BOTH)
 
         #create checkboxes for tags. List is just for demo purposes
-        self.tags = glob.item_tags
+        self.tags = tags.get()
         self.checkboxes = []
         row = 0
         column = 0
