@@ -15,9 +15,18 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
+from reaper.preset import reaper_preset_chunk
 import socket
 import threading
 import logging
+from core import actions
+
+rs = None
+
+def start():
+    global rs
+    rs = reaper_server()
+
 
 class reaper_server():
     """reaper_server.
@@ -46,6 +55,10 @@ class reaper_server():
         # Port to listen on (non-privileged ports are > 1023) 
         self.__port = 65432 
 
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True
+        thread.start()
+
     def run(self):
         """Run.
 
@@ -60,7 +73,7 @@ class reaper_server():
                 conn, addr = s.accept()
                 with conn:
                     self.__connected = True
-                    logging.debug('Connected by' + addr)
+                    logging.debug('Connected by' + str(addr))
                     while self.__connected:
                         data = conn.recv(1024)
                         logging.debug("Server" + str(data))
@@ -69,3 +82,7 @@ class reaper_server():
                             self.__connected = False
                         message = data.decode("utf-8")
                         #implement function calls
+                        if message == "save_preset":
+                            actions.save_preset()
+                        elif message == "show":
+                            actions.show()

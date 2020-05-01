@@ -34,6 +34,7 @@ import reapy
 import core.ui as ui
 import core.items as items
 from core import tags
+from reaper import server
 #============================================================#
 
 class main_view():
@@ -172,7 +173,7 @@ class main_view():
 
         #keep window on top of all others
         glob.root = self.root
-        self.root.wm_attributes("-topmost", 1)
+        #self.root.wm_attributes("-topmost", 1)
 
         logging.debug('Starting UI')
         #call new database after half second to select
@@ -353,6 +354,9 @@ def main():
     #read tags from file
     tags.load()
     tags.save()
+
+    #start server
+    server.start()
 
     #start UI
     glob.main_window = main_view()
