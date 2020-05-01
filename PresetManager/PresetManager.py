@@ -83,10 +83,13 @@ class main_view():
         self._search_filter = ""
         self._selected_item = None
         self.root = Tk()
-        #s = Style().configure("TButton", padding=6, relief="flat", background="#ccc")
+        s = Style()
+        #s.configure("TButton", padding=6, relief="flat", background="#ccc")
+        s.configure('new.TFrame', background='#707070')
+        s.configure("TLabel", padding=5, relief="flat", background="#707070")
 
         self.root.title("Reaper Preset Manager")
-        self._frame = Frame(self.root)
+        self._frame = Frame(self.root, style='new.TFrame')
         self._frame.grid(row=0, column=0, sticky=E+W+N+S)
         
         current_row = 0
