@@ -346,6 +346,16 @@ def main():
 
     """
     logging.basicConfig(filename='preset_manager.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
+
+    # create console handler and set level to info
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s | %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logging.getLogger().addHandler(handler)
+
+
+
     logging.debug('Starting Preset manager main, V0.0.1, 28.04.2020')
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
