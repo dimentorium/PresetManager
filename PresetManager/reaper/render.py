@@ -95,6 +95,11 @@ def render_audio(folder: str, preset_name: str, chunk) -> str:
     reapy.perform_action(42230)
 
     logging.debug("Finished Rendering")
+
+    #remove VSTI to not get issues when loading next time
+    vst_track.instrument.delete()
     project.save()
+
+    #close tab
     reapy.perform_action(40860)
     return renderpath
