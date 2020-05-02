@@ -25,7 +25,7 @@ from tkinter import simpledialog, filedialog
 
 import core.items as items
 import core.globals as glob
-from core import tags
+from core import tags, item_list
 
 def new_database_dialog():
     """Save Preset Dialog.
@@ -172,7 +172,7 @@ class NewDatabase(simpledialog.Dialog):
         Store selected data in selection.
         """
         self.database_folder = self._lbl_folder['text']
-        self.database_name = self._entry_name.get() + ".bin"
+        self.database_name = self._entry_name.get()
 
 class ChoiceDialog(simpledialog.Dialog):
     """ChoiceDialog.
@@ -435,6 +435,6 @@ class SavePreset(simpledialog.Dialog):
                 self.__preset.tags.append(tag)
 
     def render_preset(self):
-        path = glob.database_folder
+        path = item_list.LIST_FOLDER
         renderfilepath = render.render_audio(path, self._entry.get(), self.__preset.chunk)
         return renderfilepath

@@ -64,6 +64,8 @@ class vstipreset():
         self.chunk = chunk
         self.tags = tags
         self.preview_path = ""
+        self.rating = 0
+        self.favorite = False
 
     @property
     def properties(self) -> collections.OrderedDict:
@@ -81,6 +83,8 @@ class vstipreset():
         props["Plugin Name"] = self.chunk.plugin_name
         props["Tags"] = self.tags
         props["Preview"] = self.preview_path
+        props["Rating"] = self.rating
+        props["Favorite"] = self.favorite
         return props
 
     def check_filter(self, filter: str) -> bool:

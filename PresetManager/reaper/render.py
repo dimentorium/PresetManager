@@ -33,7 +33,7 @@ def set_output_path(folder: str):
     """
     logging.debug('Setting Render Path: ' + folder)
     #open project file
-    project_file_path = glob.render_file()
+    project_file_path = os.path.join(glob.application_folder, "renderproject.rpp")
     project_file = open(project_file_path, "r+")
     file_content = rpp.loads(project_file.read())
 
@@ -94,7 +94,7 @@ def render_audio(folder: str, preset_name: str, chunk) -> str:
     #call render action by ID
     reapy.perform_action(42230)
 
-    print("Finished Rendering")
+    logging.debug("Finished Rendering")
     project.save()
     reapy.perform_action(40860)
     return renderpath

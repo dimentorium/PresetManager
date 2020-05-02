@@ -33,7 +33,7 @@ import reaper.preset as rp
 import reapy
 import core.ui as ui
 import core.items as items
-from core import tags
+from core import tags, item_list
 from reaper import server
 #============================================================#
 
@@ -79,7 +79,7 @@ class main_view():
         Initialize class properties.
         Builds window and links function calls
         """
-        self.preset_list = {}
+        logging.debug("Starting Main UI")
         self._search_filter = ""
         self._selected_item = None
         self.root = Tk()
@@ -176,9 +176,9 @@ class main_view():
 
         #keep window on top of all others
         glob.root = self.root
-        #self.root.wm_attributes("-topmost", 1)
+        self.root.wm_attributes("-topmost", 1)
 
-        logging.debug('Starting UI')
+        logging.debug('Starting Mainloop')
         #call new database after half second to select
         self.root.after(500, self.new_database)
         self.root.mainloop()
@@ -204,8 +204,7 @@ class main_view():
         """
         newitem = items.vstipreset()
         if newitem.save():
-            logging.debug('Saving Preset: ' + newitem.preset_name)
-            self.preset_list[newitem.preset_name] = newitem
+            item_list.add(newitem)
         self.update_list()
         self.update_ui()
 
@@ -220,27 +219,23 @@ class main_view():
         self.update_ui()
 
     def save_database(self):
-        """save database.
+        """Save database.
 
         Saves the complete database of presets into a binary file with pickle.
         User is asked for folder where to save
         """
-        #open file dialog to select database file and pickle data to file
-        dbfile = os.path.join(glob.database_folder, glob.database_name)
-        logging.debug('Saving Database: ' + dbfile)
-        pickle.dump(self.preset_list, open(dbfile,"wb"))
+        item_list.save()
         self.update_ui()
 
     def load_database(self):
-        """load database.
+        """Load database.
 
         Loads a database of presets from a binary file with pickle.
         User is asked for file where to load from
         """
         #open file dialog to select database file and pickle data from file
-        filename = filedialog.askopenfilename(title = "Select file",filetypes = (("database","*.bin"),("all files","*.*")))
-        logging.debug('Saving Database: ' + filename)
-        self.preset_list = pickle.load( open( filename, "rb" ) )
+        filename = filedialog.askopenfilename(title="Select file", filetypes=(("database","*.bin"),("all files","*.*")))
+        item_list.load(filename)
         self.update_list()
         self.update_ui()
 
@@ -251,10 +246,7 @@ class main_view():
         """
         cancelled, database_name, database_folder = ui.new_database_dialog()
         if not cancelled:
-            glob.database_name = database_name
-            glob.database_folder = database_folder.replace("/","\\")
-            logging.debug('New Database: ' + glob.database_name)
-            self.preset_list = {}
+            item_list.new(database_name, database_folder)
             self.update_list()
             self.update_ui()
             self.save_database()
@@ -271,7 +263,7 @@ class main_view():
         #get selected item from tree and select from list
         selected_item = self.presettree.item(self.presettree.focus())
         index = selected_item["text"]
-        self._selected_item = self.preset_list[index]
+        self._selected_item = item_list.get()[index]
         self._selected_item.onclick()
 
         self.update_info()
@@ -299,31 +291,31 @@ class main_view():
         self.presettree.delete(*self.presettree.get_children())
 
         #loop over all items in list
-        for preset in self.preset_list:
+        for preset in item_list.get():
             #call filter function from item to check if it should be shown
             show = True
             if self._search_filter != "":
-                show = self.preset_list[preset].check_filter(self._search_filter)
+                show = item_list.get()[preset].check_filter(self._search_filter)
 
             #show item based on filter function result
             if show:
                 self.presettree.insert("", END, 
-                                        text=self.preset_list[preset].preset_name, 
-                                        values=(self.preset_list[preset].chunk.plugin_name,))
+                                        text=item_list.get()[preset].preset_name, 
+                                        values=(item_list.get()[preset].chunk.plugin_name,))
 
     def update_ui(self):
         """update UI.
 
         Updates status of controls based on current selectios
         """
-        self.lbl_database['text'] = glob.database_folder + "\\" + glob.database_name
+        self.lbl_database['text'] = item_list.file_path()
 
         #check if an item in tree is selected, if not reset internal variable
         if len(self.presettree.selection()) == 0:
             self._selected_item = None
 
         #enabe or disable save button if there is something in the database
-        if len(self.preset_list) == 0:
+        if len(item_list.get()) == 0:
             self.btn_save_database['state'] = DISABLED
         else:
             self.btn_save_database['state'] = NORMAL
@@ -348,6 +340,7 @@ def main():
     none
 
     """
+    #configure base file logger
     logging.basicConfig(filename='preset_manager.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
 
     # create console handler and set level to info
@@ -357,9 +350,9 @@ def main():
     handler.setFormatter(formatter)
     logging.getLogger().addHandler(handler)
 
-
-
+    #start application
     logging.debug('Starting Preset manager main, V0.0.1, 28.04.2020')
+
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
     logging.debug('Setting Application Path: ' + glob.application_folder)

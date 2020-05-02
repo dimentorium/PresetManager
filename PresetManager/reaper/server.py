@@ -64,7 +64,7 @@ class reaper_server():
 
         Run server
         """
-        print("Starting Reaper Com Server")
+        logging.debug("Starting Reaper Com Server")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.__host, self.__port))
             while True:
@@ -78,7 +78,7 @@ class reaper_server():
                         data = conn.recv(1024)
                         logging.debug("Server" + str(data))
                         if not data:
-                            print('Disconnected')
+                            logging.debug('Disconnected')
                             self.__connected = False
                         message = data.decode("utf-8")
                         #implement function calls

@@ -21,8 +21,9 @@ Todo:
 """
 import core.globals as glob
 import os
+import logging
 
-item_tags = []
+ITEM_TAGS = []
 
 def get() -> list:
     """Init.
@@ -32,8 +33,8 @@ def get() -> list:
     Returns:
         item_tags: list of tags
     """
-    global item_tags
-    return item_tags
+    global ITEM_TAGS
+    return ITEM_TAGS
 
 def tag_file():
     """Tag File.
@@ -50,18 +51,20 @@ def load():
 
     Loads taglist from file
     """
-    global item_tags
+    global ITEM_TAGS
     #read tags from file
+    logging.debug('Loading tag file: ' + tag_file())
     with open(tag_file()) as f:
-        item_tags = f.read().splitlines()
+        ITEM_TAGS = f.read().splitlines()
 
 def save():
     """Save.
 
     Saves taglist to file
     """
-    global item_tags
+    global ITEM_TAGS
     #read tags from file
+    logging.debug('Saving tag file: ' + tag_file())
     with open(tag_file(), 'w') as f:
-        for listitem in item_tags:
+        for listitem in ITEM_TAGS:
             f.write('%s\n' % listitem)
