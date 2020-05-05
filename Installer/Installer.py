@@ -102,7 +102,14 @@ class Wizard():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='installer.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
-    logging.debug('Starting Preset manager Installer, V0.0.1, 29.04.2020')
+    # create console handler and set level to info
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s | %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logging.getLogger().addHandler(handler)
+
+    logging.debug('Starting Preset manager Installer, V0.0.2, 05.05.2020')
 
     logging.debug('Setting Application Folder: ' + os.path.dirname(os.path.realpath(__file__)))
     glob.set_application_folder(os.path.dirname(os.path.realpath(__file__)))

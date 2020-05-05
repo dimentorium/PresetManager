@@ -65,7 +65,7 @@ class install_python(Frame):
 
         #set keys in Reaper.ini file and write config
         logging.debug("Setting keys in: " + self._ini_file)
-        Config = configparser.ConfigParser()
+        Config = configparser.ConfigParser(strict=False)
         Config.read(self._ini_file)
         Config.set(Config.sections()[0], "pythonlibpath64", installation_folder)
         Config.set(Config.sections()[0], "pythonlibdll64", "python37.dll")
@@ -90,7 +90,7 @@ class install_python(Frame):
             self._ini_file = str(Path.home()) + "\\AppData\\Roaming\\REAPER\\reaper.ini"
 
         if self._ini_file != "":
-            Config = configparser.ConfigParser()
+            Config = configparser.ConfigParser(strict=False)
             Config.read(self._ini_file)
             ppath = Config.has_option(Config.sections()[0], "pythonlibpath64")
             plib = Config.has_option(Config.sections()[0], "pythonlibdll64")
