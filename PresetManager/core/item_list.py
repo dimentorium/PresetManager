@@ -58,7 +58,7 @@ def load(filename):
     logging.debug('Loading Database: ' + filename)
     ITEMS = pickle.load(open(filename, "rb"))
 
-def add(newitem: items.vstipreset):
+def add(newitem):
     global ITEMS
     ITEMS[newitem.preset_name] = newitem
     logging.debug('Adding Preset: ' + newitem.preset_name)

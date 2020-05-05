@@ -25,7 +25,7 @@ from tkinter import simpledialog, filedialog
 
 import core.items as items
 import core.globals as glob
-from core import tags, item_list
+from core import tags, item_list, actions
 
 def new_database_dialog():
     """Save Preset Dialog.
@@ -277,6 +277,7 @@ def save_preset_dialog(preset: items.vstipreset):
         cancelled: True if dialog was cancelled false if dialog is OK
         result: list with preset name and list of tags
     """
+    actions.show()
     #call dialog and read out returning values
     save_dialog = SavePreset(preset)
     cancelled = save_dialog.cancelled
@@ -321,7 +322,7 @@ class SavePreset(simpledialog.Dialog):
             parent: parent frame calling dialog
         """
         self.selection = None
-        self.cancelled = False
+        self.cancelled = True
         self.__preset = preset
         super().__init__(glob.root, title="Save Preset")
 

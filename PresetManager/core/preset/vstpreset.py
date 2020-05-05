@@ -15,7 +15,7 @@ Todo:
 @License
 """
 import xmltodict
-import Converter.base as base
+import core.preset.base as base
 
 class Chunk:
     """Chunk Class.
@@ -90,6 +90,7 @@ class VSTPreset(base.Preset):
 
         #read chunk offset, and position read
         offsettochunklist = int.from_bytes(vstpresetstream.read(8), byteorder='little')
+        self.fullchunk = vstpresetstream.read()
         vstpresetstream.seek(offsettochunklist, 0)
 
         #Read list ID and number of entries

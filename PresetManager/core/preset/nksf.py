@@ -17,7 +17,7 @@ Todo:
 """
 import io
 import msgpack
-import converter.base as base
+import core.preset.base as base
 
 class RiffChunk:
     """Riffchunk Class.
@@ -90,7 +90,7 @@ class NKSF(base.Preset):
         NISI.id = nkfsstream.read(4)
         NISI.size = int.from_bytes(nkfsstream.read(4), byteorder='little')
         NISI.version = int.from_bytes(nkfsstream.read(4), byteorder='little')
-        NISI.data = nkfsstream.read(NISI.size-4)
+        NISI.data = nkfsstream.read(self._calc_data_size(NISI.size-4))
         NISI.info = self.__msg_to_tuple(NISI.data)
         self.__chunks["NISI"] = NISI
 
@@ -100,12 +100,9 @@ class NKSF(base.Preset):
             NICA.id = nkfsstream.read(4)
             NICA.size = int.from_bytes(nkfsstream.read(4), byteorder='little')
             NICA.version = int.from_bytes(nkfsstream.read(4), byteorder='little')
-            if NICA.size-4 > 0:
-                NICA.data = nkfsstream.read(NICA.size-4)
-            else:
-                NICA.data = ""
-                NICA.info = self.__msg_to_tuple(NICA.data)
-                self.__chunks["NICA"] = NICA
+            NICA.data = nkfsstream.read(self._calc_data_size(NICA.size-4))
+            NICA.info = self.__msg_to_tuple(NICA.data)
+            self.__chunks["NICA"] = NICA
 
         #Read Plugin ID
         if parse_PLID:
@@ -113,7 +110,7 @@ class NKSF(base.Preset):
             PLID.id = nkfsstream.read(4)
             PLID.size = int.from_bytes(nkfsstream.read(4), byteorder='little')
             PLID.version = int.from_bytes(nkfsstream.read(4), byteorder='little')
-            PLID.data = nkfsstream.read(PLID.size-4)
+            PLID.data = nkfsstream.read(self._calc_data_size(PLID.size-4))
             self.__chunks["PLID"] = PLID
 
         #Read Plugin Chunk
@@ -121,7 +118,8 @@ class NKSF(base.Preset):
             PCHK = RiffChunk()
             PCHK.id = nkfsstream.read(4)
             PCHK.size = int.from_bytes(nkfsstream.read(4), byteorder='little')
-            PCHK.data = nkfsstream.read(PCHK.size)
+            PCHK.version = int.from_bytes(nkfsstream.read(4), byteorder='little')
+            PCHK.data = nkfsstream.read(self._calc_data_size(PCHK.size-4))
             self.__chunks["PCHK"] = PCHK
 
         """not yet stable
@@ -135,6 +133,14 @@ class NKSF(base.Preset):
         self.substyle = []
         self.tags = self.__chunks["NISI"].info["types"]
         """
+
+    def _calc_data_size(self, size):
+        #a pad byte, if the chunk's length is not even.
+        final_size = size
+        if (size % 2) == 1:
+            final_size = size + 1
+        return final_size
+
 
     def __msg_to_tuple(self, data: str) -> str:
         """Convert Messagepack.

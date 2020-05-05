@@ -121,6 +121,9 @@ class main_view():
         
         self.btn_save_preset = Button(self._frame,text="Save Preset", command=self.save_preset)
         self.btn_save_preset.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
+
+        self.btn_import_folder = Button(self._frame,text="Import Folder", command=self.import_folder)
+        self.btn_import_folder.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
         #Separator
@@ -174,9 +177,13 @@ class main_view():
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
 
-        #keep window on top of all others
+        #set gobals
         glob.root = self.root
+        glob.main_window = self
+
+        #start window on top of all others
         self.root.wm_attributes("-topmost", 1)
+        self.root.wm_attributes("-topmost", 0)
 
         logging.debug('Starting Mainloop')
         #call new database after half second to select
@@ -194,7 +201,6 @@ class main_view():
         #get string from entry field and use for filtering database
         self._search_filter = self._entry_text.get()
         self.update_list()
-        self.update_ui()
 
     def save_preset(self):
         """Save preset.
@@ -205,8 +211,7 @@ class main_view():
         newitem = items.vstipreset()
         if newitem.save():
             item_list.add(newitem)
-        self.update_list()
-        self.update_ui()
+            self.update_list()
 
     def load_preset(self):
         """load.
@@ -217,6 +222,15 @@ class main_view():
         self._selected_item.load()
         logging.debug('Loading Preset: ' + self._selected_item.preset_name)
         self.update_ui()
+
+    def import_folder(self):
+        folder = filedialog.askdirectory(title="Select Directory")
+        for filename in os.listdir(folder):
+            if filename.endswith(".nksf"):
+                preset_to_add = items.nksfpreset(os.path.join(folder, filename))
+                item_list.add(preset_to_add)
+        
+        self.update_list()
 
     def save_database(self):
         """Save database.
@@ -237,7 +251,6 @@ class main_view():
         filename = filedialog.askopenfilename(title="Select file", filetypes=(("database","*.bin"),("all files","*.*")))
         item_list.load(filename)
         self.update_list()
-        self.update_ui()
 
     def new_database(self):
         """new database.
@@ -248,7 +261,6 @@ class main_view():
         if not cancelled:
             item_list.new(database_name, database_folder)
             self.update_list()
-            self.update_ui()
             self.save_database()
 
     def select_item(self, evt):
@@ -301,7 +313,9 @@ class main_view():
             if show:
                 self.presettree.insert("", END, 
                                         text=item_list.get()[preset].preset_name, 
-                                        values=(item_list.get()[preset].chunk.plugin_name,))
+                                        values=(item_list.get()[preset].plugin_name,))
+        
+        self.update_ui()
 
     def update_ui(self):
         """update UI.
@@ -351,7 +365,7 @@ def main():
     logging.getLogger().addHandler(handler)
 
     #start application
-    logging.debug('Starting Preset manager main, V0.0.1, 28.04.2020')
+    logging.debug('Starting Preset manager main, V0.0.2, 05.05.2020')
 
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))

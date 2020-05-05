@@ -22,6 +22,8 @@ import rpp
 import base64
 import logging
 
+from base64 import decode
+
 class reaper_preset_chunk:
     """Reaper Prest Chunk.
 
@@ -71,6 +73,27 @@ class reaper_preset_chunk:
         self.vst_chunk = element[:]
         if trackchunk != None:
             self.track_chunk = trackchunk
+
+    def decode_vst_chunk(self):
+        base64_message = ''.join(self.vst_chunk[:])
+        #message_bytes = base64.b64decode(base64_message)
+        #message = message_bytes.decode('utf-8')
+
+        decoded_chunk = []
+        for ch in self.vst_chunk:
+            bt = base64.b64decode(ch)
+            decoded_chunk.append(bt)
+
+        return decoded_chunk
+
+    def encode_vst_chunk(self, chunk):
+        #encode chunk
+        encoded_chunk = []
+        for ch in chunk:
+            bt = base64.b64encode(ch).decode()
+            encoded_chunk.append(bt)
+
+        self.vst_chunk = encoded_chunk
 
 
 def save() -> reaper_preset_chunk:
