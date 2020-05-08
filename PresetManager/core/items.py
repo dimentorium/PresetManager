@@ -129,7 +129,7 @@ class vstipreset():
         self.chunk = rp.save()
         if self.chunk is not None:
             #open preset dialog and configure setting
-            cancelled = ui.save_preset_dialog(self)
+            cancelled = ui.edit_preset_dialog(self)
             if not cancelled:
                 result = True
         else:
@@ -283,7 +283,7 @@ class nksfpreset():
         self.chunk = rp.save()
         if self.chunk is not None:
             #open preset dialog and configure setting
-            cancelled = ui.save_preset_dialog(self)
+            cancelled = ui.edit_preset_dialog(self)
             if not cancelled:
                 result = True
         else:

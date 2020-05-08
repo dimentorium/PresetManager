@@ -95,6 +95,17 @@ class reaper_preset_chunk:
 
         self.vst_chunk = encoded_chunk
 
+def available() -> bool:
+    available = False
+    project = reapy.Project()
+    if project.n_selected_tracks > 0:
+        selected_track = project.get_selected_track(0)
+        if selected_track.instrument != None:
+            available = True
+
+    return available
+
+
 
 def save() -> reaper_preset_chunk:
     """Save.
@@ -111,22 +122,18 @@ def save() -> reaper_preset_chunk:
     """
     #get references
     project = reapy.Project()
-    if project.n_selected_tracks > 0:
-        selected_track = project.get_selected_track(0)
+    selected_track = project.get_selected_track(0)
 
-        logging.debug('Storing preset from: ' + selected_track.name + "|" + project.name)
-        #load configuration from selected track
-        vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
-        #parse track state chnk with RPP
-        vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
-        #search for VST plugin data
-        preset_chunk = vst_track_chunk_parsed.find("FXCHAIN").find("VST")
-        #create new chunk
-        return_chunk = reaper_preset_chunk()
-        return_chunk.from_element(preset_chunk, vst_track_chunk)
-    else:
-        logging.debug('No track selected saving preset')
-        return_chunk = None
+    logging.debug('Storing preset from: ' + selected_track.name + "|" + project.name)
+    #load configuration from selected track
+    vst_track_chunk = reapy.reascript_api.GetTrackStateChunk(selected_track.id,"",10000000,False)
+    #parse track state chnk with RPP
+    vst_track_chunk_parsed = rpp.loads(vst_track_chunk[2])
+    #search for VST plugin data
+    preset_chunk = vst_track_chunk_parsed.find("FXCHAIN").find("VST")
+    #create new chunk
+    return_chunk = reaper_preset_chunk()
+    return_chunk.from_element(preset_chunk, vst_track_chunk)
 
     return return_chunk
 

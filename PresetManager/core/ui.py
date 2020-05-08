@@ -263,7 +263,7 @@ class ChoiceDialog(simpledialog.Dialog):
 
 
 
-def save_preset_dialog(preset: items.vstipreset):
+def edit_preset_dialog(preset: items.vstipreset):
     """Save Preset Dialog.
 
     Wrapper function showing dialog and returning data
@@ -274,16 +274,16 @@ def save_preset_dialog(preset: items.vstipreset):
         
     Returns:
     -------
-        cancelled: True if dialog was cancelled false if dialog is OK
+        OK: True if dialog was achknowledged
         result: list with preset name and list of tags
     """
     actions.show()
     #call dialog and read out returning values
-    save_dialog = SavePreset(preset)
-    cancelled = save_dialog.cancelled
-    return cancelled
+    save_dialog = Edit_Preset(preset)
+    OK = not save_dialog.cancelled
+    return OK
 
-class SavePreset(simpledialog.Dialog):
+class Edit_Preset(simpledialog.Dialog):
     """ChoiceDialog.
 
     Dialog for selecting an item from a list of possible choices.

@@ -33,7 +33,7 @@ import reaper.preset as rp
 import reapy
 import core.ui as ui
 import core.items as items
-from core import tags, item_list
+from core import tags, item_list, actions
 from reaper import server
 #============================================================#
 
@@ -116,10 +116,10 @@ class main_view():
         current_row +=1
 
         #Buttons for handling presets
-        self.btn_load_preset = Button(self._frame,text="Load Preset", command=self.load_preset)
+        self.btn_load_preset = Button(self._frame,text="Load Preset", command=actions.load_preset)
         self.btn_load_preset.grid(row=current_row,column=0, padx=5, pady=5, sticky='ew')
         
-        self.btn_save_preset = Button(self._frame,text="Save Preset", command=self.save_preset)
+        self.btn_save_preset = Button(self._frame,text="Save Preset", command=actions.save_preset)
         self.btn_save_preset.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
 
         self.btn_import_folder = Button(self._frame,text="Import Folder", command=self.import_folder)
@@ -201,27 +201,6 @@ class main_view():
         #get string from entry field and use for filtering database
         self._search_filter = self._entry_text.get()
         self.update_list()
-
-    def save_preset(self):
-        """Save preset.
-
-        Saves the preset from the selected Reaper Track and updates UI.
-        If no track is selected, the user is warned.
-        """
-        newitem = items.vstipreset()
-        if newitem.save():
-            item_list.add(newitem)
-            self.update_list()
-
-    def load_preset(self):
-        """load.
-
-        Loads selected preset to selected or new track in Reaper
-        """
-        #call load function from selected item
-        self._selected_item.load()
-        logging.debug('Loading Preset: ' + self._selected_item.preset_name)
-        self.update_ui()
 
     def import_folder(self):
         folder = filedialog.askdirectory(title="Select Directory")
