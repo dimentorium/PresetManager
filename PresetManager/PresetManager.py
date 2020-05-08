@@ -95,13 +95,13 @@ class main_view():
         current_row = 0
 
         #Buttons for handling database
-        self.btn_new_database = Button(self._frame,text="New Database", command=self.new_database)
+        self.btn_new_database = Button(self._frame,text="New Database", command=actions.new_database)
         self.btn_new_database.grid(row=current_row,column=0, padx=5, pady=5, sticky='ew')
 
-        self.btn_load_database = Button(self._frame,text="Load Database", command=self.load_database)
+        self.btn_load_database = Button(self._frame,text="Load Database", command=actions.load_database)
         self.btn_load_database.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
 
-        self.btn_save_database = Button(self._frame,text="Save Database", command=self.save_database)
+        self.btn_save_database = Button(self._frame,text="Save Database", command=actions.save_database)
         self.btn_save_database.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
@@ -183,11 +183,10 @@ class main_view():
 
         #start window on top of all others
         self.root.wm_attributes("-topmost", 1)
-        self.root.wm_attributes("-topmost", 0)
 
         logging.debug('Starting Mainloop')
         #call new database after half second to select
-        self.root.after(500, self.new_database)
+        self.root.after(500, actions.select_database)
         self.root.mainloop()
 
 #============================================================#
@@ -210,37 +209,6 @@ class main_view():
                 item_list.add(preset_to_add)
         
         self.update_list()
-
-    def save_database(self):
-        """Save database.
-
-        Saves the complete database of presets into a binary file with pickle.
-        User is asked for folder where to save
-        """
-        item_list.save()
-        self.update_ui()
-
-    def load_database(self):
-        """Load database.
-
-        Loads a database of presets from a binary file with pickle.
-        User is asked for file where to load from
-        """
-        #open file dialog to select database file and pickle data from file
-        filename = filedialog.askopenfilename(title="Select file", filetypes=(("database","*.bin"),("all files","*.*")))
-        item_list.load(filename)
-        self.update_list()
-
-    def new_database(self):
-        """new database.
-
-        Creates empty database
-        """
-        cancelled, database_name, database_folder = ui.new_database_dialog()
-        if not cancelled:
-            item_list.new(database_name, database_folder)
-            self.update_list()
-            self.save_database()
 
     def select_item(self, evt):
         """select item.

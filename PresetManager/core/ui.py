@@ -43,10 +43,8 @@ def new_database_dialog():
     """
     #call dialog and read out returning values
     database_dialog = NewDatabase()
-    cancelled = database_dialog.cancelled
-    name = database_dialog.database_name
-    folder = database_dialog.database_folder
-    return cancelled, name, folder
+    new_database = database_dialog.new
+    return new_database
 
 class NewDatabase(simpledialog.Dialog):
     """NewDatabase.
@@ -73,12 +71,10 @@ class NewDatabase(simpledialog.Dialog):
         Initialize class properties.
         """
         #init properties
-        self.cancelled = True
-        self.database_folder = ""
-        self.database_name = ""
+        self.new = False
 
         #call parent function from tkinter
-        super().__init__(glob.root, title="Configure Database")
+        super().__init__(glob.root, title="Load or create")
         
 
     def body(self, parent):
@@ -90,18 +86,9 @@ class NewDatabase(simpledialog.Dialog):
         ----------
             parent: dialog root
         """
-        #configure database name
-        self._var_name = StringVar()
-        self._var_name.trace("w", self.update_ui)
-        self._entry_name = Entry(parent, text="Please enter database name", textvariable=self._var_name, width=60)
-        self._entry_name.pack(expand=1, fill=BOTH,pady=5)
-
         #configure database folder
-        self._lbl_folder = Label(parent, relief=GROOVE, width=60)
+        self._lbl_folder = Label(parent, relief=GROOVE, width=60, text="Please select or create a database")
         self._lbl_folder.pack(expand=1, fill=BOTH, pady=5)
-
-        self.btn_folder = Button(parent,text="Select Folder", command=self.select_folder, width=60)
-        self.btn_folder.pack(expand=1, fill=BOTH,pady=5)
         
 
     def buttonbox(self):
@@ -112,40 +99,16 @@ class NewDatabase(simpledialog.Dialog):
         """
         box = Frame(self)
 
-        self.btn_ok = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        self.btn_ok = Button(box, text="New Database", width=20, command=self.ok, default=ACTIVE)
         self.btn_ok.pack(side=LEFT, padx=5, pady=5)
-        self.btn_ok['state'] = DISABLED
 
-        self.btn_cancel = Button(box, text="Cancel", width=10, command=self.cancel)
+        self.btn_cancel = Button(box, text="Load Database", width=20, command=self.cancel)
         self.btn_cancel.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)
 
         box.pack()
-
-    def update_ui(self, *args):
-        """Update UI.
-
-        Update status of control elements according to selection
-        
-        Parameters
-        ----------
-            args: evt arguments set by the tkinter framework
-        """
-        #update state of OK button according to preset name
-        if self._lbl_folder['text'] != "" and self._var_name.get() != "":
-            self.btn_ok['state'] = NORMAL
-        else:
-            self.btn_ok['state'] = DISABLED
-
-    def select_folder(self):
-        """Select Folder.
-
-        Open Dialog to select folder for database
-        """
-        self._lbl_folder['text'] = filedialog.askdirectory(title="Select folder")
-        self.update_ui()
 
     def validate(self) -> int:
         """Validate.
@@ -163,7 +126,7 @@ class NewDatabase(simpledialog.Dialog):
 
         Function called when OK is pressed
         """
-        self.cancelled = False
+        self.new = True
         super().ok()
 
     def apply(self):
@@ -171,8 +134,7 @@ class NewDatabase(simpledialog.Dialog):
 
         Store selected data in selection.
         """
-        self.database_folder = self._lbl_folder['text']
-        self.database_name = self._entry_name.get()
+        pass
 
 class ChoiceDialog(simpledialog.Dialog):
     """ChoiceDialog.

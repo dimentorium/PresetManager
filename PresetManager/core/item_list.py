@@ -1,4 +1,3 @@
-import logging
 import os
 import pickle
 import core.globals as glob
@@ -8,34 +7,34 @@ LIST_FOLDER = ""
 LIST_FILE = ""
 ITEMS = {}
 
-def new(list_name, list_folder):
-    global LIST_FOLDER
-    LIST_FOLDER = list_folder
-    global LIST_FILE
-    LIST_FILE = list_name + ".bin"
+def new(filepath:str):
     global ITEMS
     ITEMS = {}
-    logging.debug("Item list created: " + LIST_FILE + " - " + LIST_FOLDER)
+    set_file_path(filepath)
 
-def file_path():
+def file_path() -> str:
     """File Path.
 
     Generating Filepath of database
     """
     global LIST_FOLDER
     global LIST_FILE
-    return os.path.join(LIST_FOLDER, LIST_FILE)
+    return os.path.normpath(os.path.join(LIST_FOLDER, LIST_FILE))
 
-def convert_filename(filename):
+def set_file_path(filepath:str):
     """Convert Filename.
 
     Generates filename and folder from absolute path
     """
     global LIST_FOLDER
-    LIST_FOLDER = os.path.split(filename)[0]
     global LIST_FILE
-    LIST_FILE = os.path.split(filename)[0]
+    LIST_FOLDER, LIST_FILE = os.path.split(filepath)
 
+    base, ext = os.path.splitext(LIST_FILE)
+    if ext != ".bin":
+        ext = ".bin"
+
+    LIST_FILE = base + ext
 
 def save():
     """Save database.
@@ -44,7 +43,6 @@ def save():
     User is asked for folder where to save
     """
     global ITEMS
-    logging.debug('Saving Database: ' + file_path())
     pickle.dump(ITEMS, open(file_path(), "wb"))
 
 def load(filename):
@@ -54,14 +52,11 @@ def load(filename):
     User is asked for file where to load from
     """
     global ITEMS
-    #open file dialog to select database file and pickle data from file
-    logging.debug('Loading Database: ' + filename)
     ITEMS = pickle.load(open(filename, "rb"))
 
 def add(newitem):
     global ITEMS
     ITEMS[newitem.preset_name] = newitem
-    logging.debug('Adding Preset: ' + newitem.preset_name)
 
 def get() -> dict:
     global ITEMS
