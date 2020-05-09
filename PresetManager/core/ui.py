@@ -398,6 +398,6 @@ class Edit_Preset(simpledialog.Dialog):
                 self.__preset.tags.append(tag)
 
     def render_preset(self):
-        path = item_list.LIST_FOLDER
+        path = item_list.folder_name()
         renderfilepath = render.render_audio(path, self._entry.get(), self.__preset.chunk)
         return renderfilepath

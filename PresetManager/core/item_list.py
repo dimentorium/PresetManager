@@ -1,49 +1,77 @@
+# -*- coding: utf-8 -*-
+"""Item List module.
+
+Module for handling the list of all items. Is used as a singleton
+
+Functions
+
+Todo:
+
+@author:         Philipp Noertersheuser
+@GIT Repository: https://github.com/dimentorium/PresetManager
+@License
+"""
+
 import os
 import pickle
 import core.globals as glob
 import core.items as items
 
-LIST_FOLDER = ""
-LIST_FILE = ""
-ITEMS = {}
+__DATABASE_FILE = ""
+__ITEMS = {}
+__INITIALIZED = False
+
+def initialized() -> bool:
+    return __INITIALIZED
 
 def new(filepath:str):
-    global ITEMS
-    ITEMS = {}
+    """Create New Database.
+
+    Creates new empty database
+    """
+    global __ITEMS
+    __ITEMS = {}
     set_file_path(filepath)
+    global __INITIALIZED
+    __INITIALIZED = True
 
 def file_path() -> str:
     """File Path.
 
-    Generating Filepath of database
+    Returns filepath of database
     """
-    global LIST_FOLDER
-    global LIST_FILE
-    return os.path.normpath(os.path.join(LIST_FOLDER, LIST_FILE))
+    global __DATABASE_FILE
+    return __DATABASE_FILE
 
 def set_file_path(filepath:str):
-    """Convert Filename.
+    """Set Database File Path.
 
-    Generates filename and folder from absolute path
+    Checks file path and ending and stores it
     """
-    global LIST_FOLDER
-    global LIST_FILE
-    LIST_FOLDER, LIST_FILE = os.path.split(filepath)
+    global __DATABASE_FILE
+    db_folder, db_file = os.path.split(filepath)
 
-    base, ext = os.path.splitext(LIST_FILE)
+    base, ext = os.path.splitext(db_file)
     if ext != ".bin":
         ext = ".bin"
 
-    LIST_FILE = base + ext
+    __DATABASE_FILE = os.path.normpath(os.path.join(db_folder, base + ext))
+
+def folder_name() -> str:
+    global __DATABASE_FILE
+    return os.path.split(__DATABASE_FILE)[0]
+
+def file_name() -> str:
+    global __DATABASE_FILE
+    return os.path.split(__DATABASE_FILE)[1]
 
 def save():
     """Save database.
 
     Saves the complete database of presets into a binary file with pickle.
-    User is asked for folder where to save
     """
-    global ITEMS
-    pickle.dump(ITEMS, open(file_path(), "wb"))
+    global __ITEMS
+    pickle.dump(__ITEMS, open(file_path(), "wb"))
 
 def load(filename):
     """Load database.
@@ -51,13 +79,23 @@ def load(filename):
     Loads a database of presets from a binary file with pickle.
     User is asked for file where to load from
     """
-    global ITEMS
-    ITEMS = pickle.load(open(filename, "rb"))
+    global __ITEMS
+    __ITEMS = pickle.load(open(filename, "rb"))
+    global __INITIALIZED
+    __INITIALIZED = True
 
 def add(newitem):
-    global ITEMS
-    ITEMS[newitem.preset_name] = newitem
+    """Add item.
+
+    Adds an itme to the list
+    """
+    global __ITEMS
+    __ITEMS[newitem.preset_name] = newitem
 
 def get() -> dict:
-    global ITEMS
-    return ITEMS
+    """Get all items.
+
+    returns full list of items
+    """
+    global __ITEMS
+    return __ITEMS

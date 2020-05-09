@@ -112,7 +112,7 @@ def save_database():
     Saves the complete database of presets into a binary file with pickle.
     User is asked for folder where to save
     """
-    filename = filedialog.asksaveasfilename(initialdir=item_list.LIST_FOLDER, initialfile=item_list.LIST_FILE, title="Select file", filetypes=(("database","*.bin"),("all files","*.*")))
+    filename = filedialog.asksaveasfilename(initialdir=item_list.folder_name(), initialfile=item_list.file_name(), title="Select file", filetypes=(("database","*.bin"),("all files","*.*")))
 
     if os.path.normpath(filename) != item_list.file_path():
         logging.debug('Changing Database Path: ' + filename)

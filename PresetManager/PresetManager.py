@@ -29,6 +29,7 @@ import textwrap
 import pickle
 
 import core.globals as glob
+from logging import disable
 import reaper.preset as rp
 import reapy
 import core.ui as ui
@@ -269,24 +270,32 @@ class main_view():
 
         Updates status of controls based on current selectios
         """
-        self.lbl_database['text'] = item_list.file_path()
+        if item_list.initialized():
+            self.lbl_database['text'] = item_list.file_path()
+            self.btn_save_preset['state'] = NORMAL
+            self.btn_import_folder['state'] = NORMAL
 
-        #check if an item in tree is selected, if not reset internal variable
-        if len(self.presettree.selection()) == 0:
-            self._selected_item = None
+            #check if an item in tree is selected, if not reset internal variable
+            if len(self.presettree.selection()) == 0:
+                self._selected_item = None
 
-        #enabe or disable save button if there is something in the database
-        if len(item_list.get()) == 0:
-            self.btn_save_database['state'] = DISABLED
+            #enabe or disable save button if there is something in the database
+            if len(item_list.get()) == 0:
+                self.btn_save_database['state'] = DISABLED
+            else:
+                self.btn_save_database['state'] = NORMAL
+
+            #enable or disable load button if an item is selected
+            if self._selected_item == None:
+                self.btn_load_preset['state'] = DISABLED
+            else:
+                self.btn_load_preset['state'] = NORMAL
+
         else:
-            self.btn_save_database['state'] = NORMAL
-
-        #enable or disable load button if an item is selected
-        if self._selected_item == None:
             self.btn_load_preset['state'] = DISABLED
-        else:
-            self.btn_load_preset['state'] = NORMAL
-
+            self.btn_save_preset['state'] = DISABLED
+            self.btn_import_folder['state'] = DISABLED
+            self.btn_save_database['state'] = DISABLED
 
 #===========================Start Main Function================================#    
 def main():
