@@ -107,7 +107,7 @@ class vstipreset():
             show: boolean return if item has search string
         """
         show_name = filter in self.preset_name
-        show_plugin = filter in self.chunk.plugin_name
+        show_plugin = filter in self.plugin_name
         show_tags = filter in self.tags
         show = show_name or show_tags or show_plugin
         return show
@@ -236,7 +236,7 @@ class nksfpreset():
             show: boolean return if item has search string
         """
         show_name = filter in self.preset_name
-        show_plugin = filter in self.chunk.plugin_name
+        show_plugin = filter in self.plugin_name
         show_tags = filter in self.tags
         show = show_name or show_tags or show_plugin
         return show

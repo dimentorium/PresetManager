@@ -91,7 +91,7 @@ class NKSF(base.Preset):
         NISI.size = int.from_bytes(nkfsstream.read(4), byteorder='little')
         NISI.version = int.from_bytes(nkfsstream.read(4), byteorder='little')
         NISI.data = nkfsstream.read(self._calc_data_size(NISI.size-4))
-        NISI.info = self.__msg_to_tuple(NISI.data)
+        NISI.info = self.__msg_to_tuple(NISI.data[:NISI.size-4])
         self.__chunks["NISI"] = NISI
 
         #Read Controller Assignment
@@ -122,16 +122,23 @@ class NKSF(base.Preset):
             PCHK.data = nkfsstream.read(self._calc_data_size(PCHK.size-4))
             self.__chunks["PCHK"] = PCHK
 
-        """not yet stable
-        self.library = self.__chunks["NISI"].info["bankchain"][1:]
-        self.pluginname = self.__chunks["NISI"].info["bankchain"][0]
-        self.tags = []
-        self.instrument = []
-        self.character = self.__chunks["NISI"].info["characters"]
-        self.category = self.__chunks["NISI"].info["modes"]
+        if NISI.info != "":
+            for key, value in NISI.info.items():
+                if key == "bankchain":
+                    self.library = value[1:]
+                    self.pluginname = value[0]
+                elif key == "characters":
+                    self.character = value
+                elif key == "modes":
+                    self.category = value
+                elif key == "types":
+                    self.tags = value
+                else:
+                    print("Unknown Key: " + key)
+
+        """
         self.style = []
         self.substyle = []
-        self.tags = self.__chunks["NISI"].info["types"]
         """
 
     def _calc_data_size(self, size):
