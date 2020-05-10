@@ -98,10 +98,10 @@ class main_view():
         current_row +=1
 
         #Buttons for handling presets
-        self.btn_load_preset = Button(self._frame,text="Get Preset", command=actions.load_preset)
+        self.btn_load_preset = Button(self._frame,text="Set Preset", command=actions.load_preset)
         self.btn_load_preset.grid(row=current_row,column=0, padx=5, pady=5, sticky='ew')
         
-        self.btn_save_preset = Button(self._frame,text="Set Preset", command=actions.save_preset)
+        self.btn_save_preset = Button(self._frame,text="Get Preset", command=actions.save_preset)
         self.btn_save_preset.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
 
         self.btn_import_folder = Button(self._frame,text="Import Folder", command=self.import_folder)
