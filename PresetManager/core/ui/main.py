@@ -129,6 +129,7 @@ class main_view():
         self.presettree = Treeview(self._frame)
         self.presettree.grid(row=current_row, rowspan=8, columnspan=3, padx=5, pady = 5, sticky = 'ew')
         self.presettree.bind("<<TreeviewSelect>>", self.select_item)
+        self.presettree.bind("<Double-1>", actions.edit_preset)
         self.presettree["columns"] = ("Plugin")
         self.presettree.heading("#0", text="Preset")
         self.presettree.heading("Plugin", text="Plugin")

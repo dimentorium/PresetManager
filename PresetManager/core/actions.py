@@ -57,6 +57,18 @@ def load_preset():
     logging.debug('Loading Preset: ' + glob.main_window._selected_item.preset_name)
     update_ui()
 
+def edit_preset(evt):
+    selected_preset = glob.main_window._selected_item
+    if selected_preset != None:
+        if ui.edit_preset_dialog(selected_preset):
+            logging.debug('Editing Preset: ' + selected_preset.preset_name)
+            item_list.update(selected_preset)
+        else:
+            logging.debug('Cancel Editing Preset: ' + selected_preset.preset_name)
+    else:
+        logging.debug('No Preset selected')
+        simpledialog.messagebox.showinfo("Warning", "Please select Preset")
+
 #============================================================#
 #=================== Database Handling ======================#
 def select_database():

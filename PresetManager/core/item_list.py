@@ -106,6 +106,14 @@ def add(newitem):
     global __ITEMS
     __ITEMS[newitem.preset_name] = newitem
 
+def update(newitem):
+    """Update item.
+
+    Updates an item in the list
+    """
+    global __ITEMS
+    __ITEMS[newitem.preset_name] = newitem
+
 def get() -> dict:
     """Get all items.
 
