@@ -67,8 +67,8 @@ class main_view():
         self.root = Tk()
         s = Style()
         #s.configure("TButton", padding=6, relief="flat", background="#ccc")
-        s.configure('new.TFrame', background='#707070')
-        s.configure("TLabel", padding=5, relief="flat", background="#707070")
+        #s.configure('new.TFrame', background='#707070')
+        #s.configure("TLabel", padding=5, relief="flat", background="#707070")
 
         self.root.title("Reaper Preset Manager")
         self._frame = Frame(self.root, style='new.TFrame')

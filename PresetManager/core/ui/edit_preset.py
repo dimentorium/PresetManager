@@ -81,19 +81,47 @@ class Edit_Preset(simpledialog.Dialog):
             parent: dialog root
         """
         #configure entry field and link to variable
+        entry_label = Label(parent, text="Preset Name")
+        entry_label.grid(row=0, column=0, padx=5, pady=1, sticky='ew')
         self._entry_text = StringVar()
         self._entry_text.trace("w", self.update_ui)
-        self._entry = Entry(parent, text="Please configure preset to save", textvariable=self._entry_text)
-        self._entry.pack(expand=1, fill=BOTH,pady=5)
+        self._entry = Entry(parent, textvariable=self._entry_text)
+        self._entry.grid(row=0, column=1, padx=5, pady=1, sticky='ew')
+        self._entry.focus()
+
+        #configure rating field
+        rate_label = Label(parent, text="Rating")
+        rate_label.grid(row=1, column=0, padx=5, pady=1, sticky='ew')
+        self._rating_value = IntVar()
+        self._rating = Spinbox(parent, values=(1, 2, 3, 4, 5), textvariable=self._rating_value)
+        self._rating.grid(row=1, column=1, padx=5, pady=1, sticky='ew')
+
+        #configure favorite checkbox
+        favorite_label = Label(parent, text="Favorite")
+        favorite_label.grid(row=2, column=0, padx=5, pady=1, sticky='ew')
+        self._entry_favorite = BooleanVar()
+        self._cb_favorite = Checkbutton(parent, variable=self._entry_favorite)
+        self._cb_favorite.grid(row=2, column=1, padx=5, pady=1, sticky='ew')
 
         #configure render checkbox
-        self._entry_render = BooleanVar()
-        self._cb_render = Checkbutton(parent,text="Render", variable=self._entry_render)
-        self._cb_render.pack(padx=1, pady=2, anchor=W)
+        preview_label = Label(parent, text="Preview")
+        preview_label.grid(row=3, column=0, padx=5, pady=1, sticky='ew')
+        self._entry_preview = BooleanVar()
+        self._cb_preview = Checkbutton(parent, variable=self._entry_preview)
+        self._cb_preview.grid(row=3, column=1, padx=5, pady=1, sticky='ew')
+
+        Separator(parent, orient="horizontal").grid(row=4, columnspan=2, padx=5, pady=5, sticky='ew')
+
+        #acustom tags label
+        tags_label = Label(parent, text="Tags")
+        tags_label.grid(row=5, column=0, padx=5, pady=1, sticky='ew')
+        self._entry_custom_tags = StringVar()
+        self._custom_tags = Entry(parent, textvariable=self._entry_custom_tags)
+        self._custom_tags.grid(row=5, column=1, padx=5, pady=1, sticky='ew')
 
         #add frame for checkboxes
         self._frame = Frame(parent, relief=GROOVE, padding=5)
-        self._frame.pack(expand=1, fill=BOTH)
+        self._frame.grid(row=6, columnspan=2, padx=5, pady=1, sticky='ew')
 
         #create checkboxes for tags. List is just for demo purposes
         self.tags = tags.get()
@@ -172,7 +200,7 @@ class Edit_Preset(simpledialog.Dialog):
         self.__preset.preset_name = self._entry.get()
         self.__preset.tags = []
 
-        if self._entry_render.get():
+        if self._entry_preview.get():
             self.__preset.preview_path = self.render_preset()
 
         #check which tags are selected an store them with presetname
