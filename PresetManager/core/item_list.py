@@ -4,6 +4,7 @@
 Module for handling the list of all items. Is used as a singleton
 
 Functions
+initialized: Shows if database has been initialized and ca be used
 
 Todo:
 
@@ -22,9 +23,13 @@ __ITEMS = {}
 __INITIALIZED = False
 
 def initialized() -> bool:
+    """Check if database is initialized.
+
+    Reads variable to make sure the database can be used and accessed
+    """
     return __INITIALIZED
 
-def new(filepath:str):
+def new(filepath: str):
     """Create New Database.
 
     Creates new empty database
@@ -43,7 +48,7 @@ def file_path() -> str:
     global __DATABASE_FILE
     return __DATABASE_FILE
 
-def set_file_path(filepath:str):
+def set_file_path(filepath: str):
     """Set Database File Path.
 
     Checks file path and ending and stores it
@@ -51,6 +56,7 @@ def set_file_path(filepath:str):
     global __DATABASE_FILE
     db_folder, db_file = os.path.split(filepath)
 
+    #check if file ends on .bin otherwise replace this
     base, ext = os.path.splitext(db_file)
     if ext != ".bin":
         ext = ".bin"
@@ -58,10 +64,18 @@ def set_file_path(filepath:str):
     __DATABASE_FILE = os.path.normpath(os.path.join(db_folder, base + ext))
 
 def folder_name() -> str:
+    """Return folder.
+
+    Returns the folderpath where the database is located
+    """
     global __DATABASE_FILE
     return os.path.split(__DATABASE_FILE)[0]
 
 def file_name() -> str:
+    """Return filename.
+
+    Returns the filenam of the database
+    """
     global __DATABASE_FILE
     return os.path.split(__DATABASE_FILE)[1]
 
