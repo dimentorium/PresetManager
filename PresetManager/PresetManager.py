@@ -56,7 +56,9 @@ def main():
     logging.debug('Setting Application Path: ' + glob.application_folder)
 
     #read tags from file
+    logging.debug('Loading tag file: ' + tags.tag_file())
     tags.load()
+    logging.debug('Saving tag file: ' + tags.tag_file())
     tags.save()
 
     #start server
