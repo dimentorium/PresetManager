@@ -126,7 +126,7 @@ class Edit_Preset(simpledialog.Dialog):
         self._custom_tags.grid(row=5, column=1, padx=5, pady=1, sticky='ew')
 
         #add frame for checkboxes
-        self._frame = Frame(parent, relief=GROOVE, padding=5)
+        self._frame = ScrollableFrame(parent, relief=GROOVE, padding=5)
         self._frame.grid(row=6, columnspan=2, padx=5, pady=1, sticky='ew')
 
         #create checkboxes for tags. List is just for demo purposes
@@ -139,11 +139,12 @@ class Edit_Preset(simpledialog.Dialog):
             checked = IntVar()
             if tag in self.__preset.tags:
                 checked.set(True)
-            cb = Checkbutton(self._frame, text=tag, variable=checked)
+            cb = Checkbutton(self._frame.scrollable_frame, text=tag, variable=checked)
             cb.grid(row=row, column=column, sticky='ew')
+            #cb.pack()
             self.checkboxes.append(checked)
             column += 1
-            if column >= 3:
+            if column >= 2:
                 column = 0
                 row += 1
 
@@ -227,3 +228,25 @@ class Edit_Preset(simpledialog.Dialog):
     def render_preset(self):
         renderfilepath = render.render_audio(item_list.folder_name(), self._entry.get(), self.__preset.chunk)
         return renderfilepath
+
+
+class ScrollableFrame(Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = Canvas(self)
+        scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
