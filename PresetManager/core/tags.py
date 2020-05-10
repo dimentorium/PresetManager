@@ -64,3 +64,14 @@ def save():
     with open(tag_file(), 'w') as file_to_write:
         for listitem in __ITEM_TAGS:
             file_to_write.write('%s\n' % listitem)
+
+def update(tag_list: list):
+    """Update Tag List.
+
+    Checks if new tags are already in list and adds these if not
+    """
+    global __ITEM_TAGS
+    for tag in tag_list: 
+        if tag not in __ITEM_TAGS: 
+            __ITEM_TAGS.append(tag) 
+

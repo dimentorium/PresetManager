@@ -93,6 +93,7 @@ def load(filename):
     Loads a database of presets from a binary file with pickle.
     User is asked for file where to load from
     """
+    set_file_path(filename)
     global __ITEMS
     __ITEMS = pickle.load(open(filename, "rb"))
     global __INITIALIZED

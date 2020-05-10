@@ -20,10 +20,12 @@ from tkinter.ttk import *
 from tkinter import simpledialog, filedialog
 
 import core.globals as glob
+from core.item_list import update
 import core.items as items
 import reaper.preset as rp
 import core.ui as ui
 import core.item_list as item_list
+import core.tags as tags
 
 #============================================================#
 #=================== Preset Handling ========================#
@@ -42,6 +44,8 @@ def save_preset():
         if ui.edit_preset_dialog(new_item):
             logging.debug('Saving Preset: ' + new_item.preset_name)
             item_list.add(new_item)
+            tags.update(new_item.tags)
+            tags.save()
             update_ui()
     else:
         logging.debug('No Preset available')
@@ -63,12 +67,24 @@ def edit_preset(evt):
         if ui.edit_preset_dialog(selected_preset):
             logging.debug('Editing Preset: ' + selected_preset.preset_name)
             item_list.update(selected_preset)
+            tags.update(selected_preset.tags)
+            tags.save()
+            update_ui()
         else:
             logging.debug('Cancel Editing Preset: ' + selected_preset.preset_name)
     else:
         logging.debug('No Preset selected')
         simpledialog.messagebox.showinfo("Warning", "Please select Preset")
 
+def import_presets():
+    folder = filedialog.askdirectory(title="Select Directory")
+    for filename in os.listdir(folder):
+        if filename.endswith(".nksf"):
+            preset_to_add = items.nksfpreset(os.path.join(folder, filename))
+            item_list.add(preset_to_add)
+            tags.update(preset_to_add.tags)
+    
+    update_ui()
 #============================================================#
 #=================== Database Handling ======================#
 def select_database():
@@ -144,6 +160,7 @@ def update_ui():
     Calls View functions to update the Main Window
     """
     glob.main_window.update_list()
+    glob.main_window.update_info()
     glob.main_window.update_ui()
 
 def show():

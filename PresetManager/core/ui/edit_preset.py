@@ -137,6 +137,8 @@ class Edit_Preset(simpledialog.Dialog):
         for tag in self.tags:
             #create a var that is later used for getting status of checboxes
             checked = IntVar()
+            if tag in self.__preset.tags:
+                checked.set(True)
             cb = Checkbutton(self._frame, text=tag, variable=checked)
             cb.grid(row=row, column=column, sticky='ew')
             self.checkboxes.append(checked)
@@ -208,9 +210,6 @@ class Edit_Preset(simpledialog.Dialog):
         self.__preset.rating = self._rating_value.get()
         self.__preset.favorite = self._entry_favorite.get()
 
-
-        
-
         if self._entry_preview.get():
             self.__preset.preview_path = self.render_preset()
 
@@ -226,6 +225,5 @@ class Edit_Preset(simpledialog.Dialog):
             self.__preset.tags.extend(custom_tag_list)
 
     def render_preset(self):
-        path = item_list.folder_name()
-        renderfilepath = render.render_audio(path, self._entry.get(), self.__preset.chunk)
+        renderfilepath = render.render_audio(item_list.folder_name(), self._entry.get(), self.__preset.chunk)
         return renderfilepath

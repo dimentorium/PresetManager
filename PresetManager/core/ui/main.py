@@ -104,7 +104,7 @@ class main_view():
         self.btn_save_preset = Button(self._frame,text="Get Preset", command=actions.save_preset)
         self.btn_save_preset.grid(row=current_row,column=1, padx=5, pady=5, sticky='ew')
 
-        self.btn_import_folder = Button(self._frame,text="Import Folder", command=self.import_folder)
+        self.btn_import_folder = Button(self._frame,text="Import Folder", command=actions.import_presets)
         self.btn_import_folder.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
@@ -182,15 +182,6 @@ class main_view():
         """
         #get string from entry field and use for filtering database
         self._search_filter = self._entry_text.get()
-        self.update_list()
-
-    def import_folder(self):
-        folder = filedialog.askdirectory(title="Select Directory")
-        for filename in os.listdir(folder):
-            if filename.endswith(".nksf"):
-                preset_to_add = items.nksfpreset(os.path.join(folder, filename))
-                item_list.add(preset_to_add)
-        
         self.update_list()
 
     def select_item(self, evt):

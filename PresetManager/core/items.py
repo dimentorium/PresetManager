@@ -109,7 +109,9 @@ class vstipreset():
         show_name = filter in self.preset_name
         show_plugin = filter in self.plugin_name
         show_tags = filter in self.tags
-        show = show_name or show_tags or show_plugin
+        show_rating = filter == str(self.rating)
+        show_favorite = (filter == "fav") and self.favorite
+        show = show_name or show_tags or show_plugin or show_rating or show_favorite
         return show
 
     def load(self):
