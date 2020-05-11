@@ -25,21 +25,12 @@ import core.ui as ui
 import reaper.server as server
 
 #============================================================#
-#===========================Start Main Function==============#    
+#===========================Start Main Function==============#
 def main():
-    """Start GUI application.
-
-    Parameters
-    ----------
-    none
-
-    Returns
-    -------
-    none
-
-    """
+    """Initialize Backend and start Preset Manager application."""
     #configure base file logger
-    logging.basicConfig(filename='preset_manager.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='preset_manager.log',
+                        level=logging.DEBUG, format='%(asctime)s %(message)s')
 
     # create console handler and set level to info
     handler = logging.StreamHandler()
@@ -53,12 +44,12 @@ def main():
 
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
-    logging.debug('Setting Application Path: ' + glob.application_folder)
+    logging.debug('Setting Application Path: %s', glob.application_folder)
 
     #read tags from file
-    logging.debug('Loading tag file: ' + tags.tag_file())
+    logging.debug('Loading tag file: %s', tags.tag_file())
     tags.load()
-    logging.debug('Saving tag file: ' + tags.tag_file())
+    logging.debug('Saving tag file: %s', tags.tag_file())
     tags.save()
 
     #start server
