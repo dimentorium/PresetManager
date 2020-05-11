@@ -134,12 +134,23 @@ class NKSF(base.Preset):
                 elif key == "types":
                     self.tags = value
                 else:
-                    print("Unknown Key: " + key)
+                    pass
 
         """
         self.style = []
         self.substyle = []
         """
+
+    #todo: function for flattening the data
+    def __convert_to_list(self, value, final_list=[]):
+        if type(value) is str:
+            if value not in final_list:
+                final_list.append(value)
+        elif type(value) is list:
+            for val in value:
+                final_list.append(self.__convert_to_list(val, final_list))
+
+        return final_list
 
     def _calc_data_size(self, size):
         #a pad byte, if the chunk's length is not even.

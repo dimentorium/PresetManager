@@ -86,7 +86,7 @@ class Edit_Preset(simpledialog.Dialog):
         self._entry_text.set(self.__preset.preset_name)
         self._entry_text.trace("w", self.update_ui)
         self._entry = Entry(parent, textvariable=self._entry_text)
-        self._entry.grid(row=0, column=1, padx=5, pady=1, sticky='ew')
+        self._entry.grid(row=0, column=1, columnspan=2, padx=5, pady=1, sticky='ew')
         self._entry.focus()
 
         #configure rating field
@@ -95,7 +95,7 @@ class Edit_Preset(simpledialog.Dialog):
         self._rating_value = IntVar()
         self._rating_value.set(self.__preset.rating)
         self._rating = Spinbox(parent, values=(1, 2, 3, 4, 5), textvariable=self._rating_value)
-        self._rating.grid(row=1, column=1, padx=5, pady=1, sticky='ew')
+        self._rating.grid(row=1, column=1, columnspan=2, padx=5, pady=1, sticky='ew')
 
         #configure favorite checkbox
         favorite_label = Label(parent, text="Favorite")
@@ -109,23 +109,25 @@ class Edit_Preset(simpledialog.Dialog):
         preview_label = Label(parent, text="Preview")
         preview_label.grid(row=3, column=0, padx=5, pady=1, sticky='ew')
         self._entry_preview = BooleanVar()
-        if not path.exists(self.__preset.preview_path):
+        if path.exists(self.__preset.preview_path):
             self._entry_preview.set(True)
         self._cb_preview = Checkbutton(parent, variable=self._entry_preview)
         self._cb_preview.grid(row=3, column=1, padx=5, pady=1, sticky='ew')
+        preview_explanation_label = Label(parent, text="Generates Preview")
+        preview_explanation_label.grid(row=3, column=2, padx=5, pady=1, sticky='ew')
 
-        Separator(parent, orient="horizontal").grid(row=4, columnspan=2, padx=5, pady=5, sticky='ew')
+        Separator(parent, orient="horizontal").grid(row=4, columnspan=3, padx=5, pady=5, sticky='ew')
 
         #custom tags label
         tags_label = Label(parent, text="Tags")
         tags_label.grid(row=5, column=0, padx=5, pady=1, sticky='ew')
         self._entry_custom_tags = StringVar()
         self._custom_tags = Entry(parent, textvariable=self._entry_custom_tags)
-        self._custom_tags.grid(row=5, column=1, padx=5, pady=1, sticky='ew')
+        self._custom_tags.grid(row=5, column=1, columnspan=2, padx=5, pady=1, sticky='ew')
 
         #add frame for checkboxes
         self._frame = ScrollableFrame(parent, relief=GROOVE, padding=5)
-        self._frame.grid(row=6, columnspan=2, padx=5, pady=1, sticky='ew')
+        self._frame.grid(row=6, columnspan=3, padx=5, pady=1, sticky='ew')
 
         #create checkboxes for tags. List is just for demo purposes
         self.tags = tags.get()
@@ -209,27 +211,45 @@ class Edit_Preset(simpledialog.Dialog):
         self.__preset.rating = self._rating_value.get()
         self.__preset.favorite = self._entry_favorite.get()
 
+        #generate preview if not yet existing
         if self._entry_preview.get():
-            self.__preset.preview_path = self.render_preset()
+            if not path.exists(self.__preset.preview_path):
+                self.__preset.preview_path = self.render_preset()
 
-        #check which tags are selected an store them with presetname
+        #check which tags are selected and store them with presetname
         self.__preset.tags = []
-        for tag, box in zip(self.tags,self.checkboxes) :
+        for tag, box in zip(self.tags,self.checkboxes):
             if box.get():
                 self.__preset.tags.append(tag)
 
+        #append custom tags from entery field
         custom_tag_string = self._entry_custom_tags.get()
         if custom_tag_string != "":
             custom_tag_list = [x.strip() for x in custom_tag_string.split(',')]
             self.__preset.tags.extend(custom_tag_list)
 
     def render_preset(self):
+        """Renders preset currently edited
+
+        Returns:
+            renderfilepath[str] -- path to preview file
+        """
         renderfilepath = render.render_audio(item_list.folder_name(), self._entry.get(), self.__preset.chunk)
         return renderfilepath
 
 
 class ScrollableFrame(Frame):
+    """Scrollable frame widget
+
+    Arguments:
+        Frame {Frame} -- Base class from TKinter
+    """
     def __init__(self, container, *args, **kwargs):
+        """Initialize scrollable frame widget
+
+        Arguments:
+            container {unknown} -- parent widget where frame is placed in
+        """
         super().__init__(container, *args, **kwargs)
         canvas = Canvas(self)
         scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
