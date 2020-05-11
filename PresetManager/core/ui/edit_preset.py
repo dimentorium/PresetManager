@@ -17,8 +17,6 @@ Todo:
 @License
 """
 import os.path as path
-from core.globals import root
-from reaper.preset import save
 import reaper.render as render
 from tkinter import *
 from tkinter.ttk import *

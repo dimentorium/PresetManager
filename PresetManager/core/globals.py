@@ -8,10 +8,11 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
-
+from tkinter import Tk
+from core.ui import main
 #reference to root and view
-root = None
-main_window = None
+root: Tk
+main_window: main.main_view
 
 #reference to folder where application is started from. Either script or exe
 application_folder = ""

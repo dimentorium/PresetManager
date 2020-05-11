@@ -16,16 +16,11 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
-from core.globals import root
-from reaper.preset import save
-import reaper.render as render
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import simpledialog, filedialog
 
-import core.items as items
 import core.globals as glob
-from core import tags, item_list, actions
 
 
 
