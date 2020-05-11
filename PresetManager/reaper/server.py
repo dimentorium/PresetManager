@@ -76,7 +76,7 @@ class reaper_server():
                     logging.debug('Connected by' + str(addr))
                     while self.__connected:
                         data = conn.recv(1024)
-                        logging.debug("Server" + str(data))
+                        logging.debug("Received Command: " + str(data))
                         if not data:
                             logging.debug('Disconnected')
                             self.__connected = False
