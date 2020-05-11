@@ -10,7 +10,7 @@ import os
 chunk_from_reaper = rpre.save()
 decoded_chunk_from_reaper = chunk_from_reaper.decode_vst_chunk()
 
-presetpath = r"C:\Users\phili\Desktop\fxp\Tyrell"
+presetpath = r"C:\Users\phili\Desktop\fxp\omni"
 
 for filename in os.listdir(presetpath):
     #read nks file and get chunk

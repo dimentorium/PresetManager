@@ -3,46 +3,29 @@ from reapy.core import track
 import rpp
 import base64
 import reaper.preset as rpre
-import Converter.vstpreset as vsti
+import Converter.fxp as fxp
 
-chunk = rpre.save("test")
-
-
-base64_message = ''.join(chunk.vst_chunk[:])
-message_bytes = base64.b64decode(base64_message)
-#message = message_bytes.decode('utf-8')
-
-msg = []
-for ch in chunk.vst_chunk:
-    bt = base64.b64decode(ch)
-    msg.append(bt)
-#msg[315].hex()
-
-#vstipreset = vsti.VSTPreset("C:\\Users\\phili\\Desktop\\amped.vstpreset")
-
-print("Test")
+#load chunk from reaper and decode it
+chunk_from_reaper = rpre.save()
+decoded_chunk_from_reaper = chunk_from_reaper.decode_vst_chunk()
 
 
-start = "#pgm=bbb Funkeee\n"
-filepath= "C:\\Users\\phili\\Desktop\\bbb.FXP"
-fxppresetstream = open(filepath, "rb")
-chunkmagic = fxppresetstream.read(4).decode("utf-8")
-size = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-fxmagic = fxppresetstream.read(4).decode("utf-8")
-version = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-fxid = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-fxversion = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-numparams = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-prgname = fxppresetstream.read(28).decode("utf-8")
-chunksize = int.from_bytes(fxppresetstream.read(4), byteorder='big')
-fxpchunk = fxppresetstream.read()
+#load fxp preset file
+#filepath= "C:\\Users\\phili\\Desktop\\Tyrell_bbb.FXP"
+filepath = r"C:\Users\phili\Desktop\Pianoteq_custom2.FXP"
+fxppreset = fxp.FXPPreset(filepath)
 
-combined = start.encode() + fxpchunk
+#start stuff og pianoteq b'\xa0\x98\x13\xfe\x02\x00\x00\x00H8\x12\x00r\x17\x0b\x00 \x00\x00\x00\x118V8\xf9V\x01\x00
+start = b'\xa0\x98\x13\xfe\x02\x00\x00\x00H8\x12\x00r\x17\x0b\x00 \x00\x00\x00\x118V8\xf9V\x01\x00'
+combined = start + fxppreset.fxpchunk
+#combined = fxppreset.fxpchunk
 
 #split into size 280
 length = 210
 progchunk = [combined[i:i+length] for i in range(0, len(combined), length)]
-progchunk.insert(0, msg[0])
+
+#header from reaper, Tyrell = 0, Halion = 0,1,2
+progchunk.insert(0, decoded_chunk_from_reaper[0])
 
 progchunk.append(b'\x00')
 msg2 = []
@@ -50,14 +33,14 @@ for ch in progchunk:
     bt = base64.b64encode(ch).decode()
     msg2.append(bt)
 
-for a,b in zip(chunk.vst_chunk, msg2):
-    print(a==b)
+#for a,b in zip(chunk.vst_chunk, msg2):
+#    print(a==b)
 
-chunk.vst_chunk= msg2
+chunk_from_reaper.vst_chunk= msg2
 
-rpre.load(chunk)
+rpre.load(chunk_from_reaper)
 
-chunktest = rpre.save("test")
+chunktest = rpre.save()
 
 print("Test")
 
