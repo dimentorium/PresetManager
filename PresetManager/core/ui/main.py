@@ -164,6 +164,8 @@ class main_view():
         glob.root = self.root
         glob.main_window = self
 
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         #start window on top of all others
         self.root.wm_attributes("-topmost", 1)
 
@@ -269,3 +271,19 @@ class main_view():
             self.btn_save_preset['state'] = DISABLED
             self.btn_import_folder['state'] = DISABLED
             self.btn_save_database['state'] = DISABLED
+
+    def on_closing(self):
+        logging.debug('Exiting application clicked')
+        result = simpledialog.messagebox.askyesnocancel("Quit", "Do you want to save the database?")
+        if result == None:
+            logging.debug('Exiting cancelled')
+        elif result == True:
+            logging.debug('Saving database')
+            actions.save_database()
+            logging.debug('Exiting application')
+            self.root.destroy()
+        else:
+            logging.debug('Exiting application')
+            self.root.destroy()
+
+
