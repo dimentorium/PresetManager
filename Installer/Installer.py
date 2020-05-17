@@ -4,7 +4,7 @@ from tkinter.constants import DISABLED, GROOVE, NORMAL
 from tkinter import simpledialog, filedialog
 import core.globals as glob
 import os
-import zipfile
+import ctypes
 from Steps.install_python import install_python
 from Steps.install_reapy import install_reapy
 from Steps.install_welcome import install_welcome
@@ -109,12 +109,21 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     logging.getLogger().addHandler(handler)
 
-    logging.debug('Starting Preset manager Installer, V0.0.2, 05.05.2020')
+    logging.debug('Starting Preset manager Installer, V0.3.0, 17.05.2020')
 
     logging.debug('Setting Application Folder: ' + os.path.dirname(os.path.realpath(__file__)))
     glob.set_application_folder(os.path.dirname(os.path.realpath(__file__)))
 
-    logging.debug('Starting UI')
-    wiz = Wizard()
-    logging.debug("Installer finished")
+    #check if application is started with admin privileges
+    is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+
+    if is_admin:
+        logging.debug('User has admin privileges')
+        logging.debug('Starting UI')
+        wiz = Wizard()
+        logging.debug("Installer finished")
+    else:
+        logging.debug('User does not have admin privileges')
+        simpledialog.messagebox.showinfo("Warning", "This installer needs admin privileges. Please right-click exe and select: Run as Admin")
+        logging.debug("Installer cancelled")
     

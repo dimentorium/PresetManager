@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\Installer"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "C:\\Users\\phili\\AppData\\Local\\Programs\\Python\\Python37\\python.exe"
+	}
+}
