@@ -39,6 +39,7 @@ def new(filepath: str):
     set_file_path(filepath)
     global __INITIALIZED
     __INITIALIZED = True
+    save()
 
 def file_path() -> str:
     """File Path.
