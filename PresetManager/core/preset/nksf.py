@@ -132,7 +132,7 @@ class NKSF(base.Preset):
                 elif key == "modes":
                     self.category = value
                 elif key == "types":
-                    self.tags = value
+                    self.tags = self.__convert_to_list(value, [])
                 else:
                     pass
 
@@ -142,13 +142,17 @@ class NKSF(base.Preset):
         """
 
     #todo: function for flattening the data
-    def __convert_to_list(self, value, final_list=[]):
-        if type(value) is str:
-            if value not in final_list:
+    def __convert_to_list(self, values, final_list=[]):
+        for value in values:
+            if type(value) is str:
                 final_list.append(value)
-        elif type(value) is list:
-            for val in value:
-                final_list.append(self.__convert_to_list(val, final_list))
+            elif type(value) is list:
+                if len(value) == 1:
+                    final_list.append(value[0])
+                elif len(value) == 2:
+                    final_list.append(value[0] + "+" + value[1])
+                else:
+                    self.__convert_to_list(value, final_list)
 
         return final_list
 

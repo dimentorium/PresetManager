@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 Build/PresetManager/PresetManager.zip
 Build/PresetManager/PresetManager.zip
+Build/PresetManager/PresetManager.exe

@@ -215,7 +215,15 @@ class main_view():
         if self._selected_item != None:
             #loop over properties from selected item and display them in info tree
             for key, value in self._selected_item.properties.items():
-                self.presetinfo.insert("", END, text=key, values=(value,))
+                if key != "Tags":
+                    self.presetinfo.insert("", END, text=key, values=(value,))
+            
+            alltags = self._selected_item.properties["Tags"]
+            tags_entry = self.presetinfo.insert("", END, text="Tags", values=(len(alltags),))
+            for prop in alltags:
+                self.presetinfo.insert(tags_entry, END, text="", values=(prop,))
+            
+            self.presetinfo.item(tags_entry, open=True)
 
     def update_list(self):
         """update list.
