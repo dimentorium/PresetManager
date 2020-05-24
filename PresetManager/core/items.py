@@ -23,8 +23,6 @@ import reaper.preset as rp
 import core.ui as ui
 from tkinter import simpledialog, filedialog
 from playsound import playsound
-import librosa
-import simpleaudio as sa
 from openal import *
 import threading
 import time

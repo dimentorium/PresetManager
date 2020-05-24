@@ -23,6 +23,8 @@ import core.globals as glob
 import core.tags as tags
 import core.ui as ui
 import reaper.server as server
+from openal import *
+from pyogg import *
 
 #============================================================#
 #===========================Start Main Function==============#
@@ -40,7 +42,7 @@ def main():
     logging.getLogger().addHandler(handler)
 
     #start application
-    logging.debug('Starting Preset manager main, V0.4.1, 18.05.2020')
+    logging.debug('Starting Preset manager main, V0.4.2, 24.05.2020')
 
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))
