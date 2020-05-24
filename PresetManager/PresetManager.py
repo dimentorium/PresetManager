@@ -40,7 +40,7 @@ def main():
     logging.getLogger().addHandler(handler)
 
     #start application
-    logging.debug('Starting Preset manager main, V0.4.0, 17.05.2020')
+    logging.debug('Starting Preset manager main, V0.4.1, 18.05.2020')
 
     #set application folder
     glob.application_folder = os.path.dirname(os.path.realpath(__file__))

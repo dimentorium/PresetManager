@@ -23,8 +23,14 @@ import reaper.preset as rp
 import core.ui as ui
 from tkinter import simpledialog, filedialog
 from playsound import playsound
+import librosa
+import simpleaudio as sa
+from openal import *
+import threading
+import time
 import logging
 import reapy
+import sys
 
 import base64
 import reaper.preset as rpre
@@ -263,10 +269,28 @@ class nksfpreset():
 
         #convert chunk into list with length 210
         length = 210
-        progchunk = [new_chunk[i:i+length] for i in range(0, len(new_chunk), length)]
+        presetdata = [new_chunk[i:i+length] for i in range(0, len(new_chunk), length)]
 
         #insert reaper specific header and footer
-        progchunk.insert(0, decoded_chunk_from_reaper[0])
+        """This is used to calculate the number of list elements for the header of the fx state chunk
+        it is built up the following:
+        4 Bytes: VST ID
+        4 Bytes: Reaper Magix Number
+        4 Bytes: Number of Inputs
+        8 Bytes by Number of inputs: Input Mask
+        4 Bytes: Number of outputs
+        8 Bytes by Number of outputs: output Mask
+        4 Bytes: Something I don't know
+        8 Bytes: seems to be the end 01 00 00 00 00 00 10 00
+        """
+        instrument_description_lenth = 4 + 4 + 4 + (selected_track.instrument.n_inputs * 8) + 4 + (selected_track.instrument.n_outputs * 8) + 4 + 8
+        # calculate number of list elements needed for length. Per element its 210 bytes
+        no_list_elements = int(instrument_description_lenth / 210) + (instrument_description_lenth % 210 > 0)
+
+        if no_list_elements == 1:
+            progchunk = [decoded_chunk_from_reaper[0]] + presetdata
+        else:
+            progchunk = decoded_chunk_from_reaper[0:no_list_elements-1] + presetdata
         pgm_name = b'\x00' + "test".encode() + b'\x00\x10\x00\x00\x00'
         progchunk.append(pgm_name)
 
@@ -304,8 +328,10 @@ class nksfpreset():
             #play audio
             try:
                 logging.debug("Playing: " + self.preview_path)
-                playsound(self.preview_path, block=False)
+                t = threading.Thread(target=self.play_ogg, args=(self.preview_path,))
+                t.start()
             except:
+                e = sys.exc_info()[0]
                 logging.debug("Could not play:" + self.preview_path)
 
     def ondoubleclick(self):
@@ -314,5 +340,20 @@ class nksfpreset():
         Action when item is double clicked.
         """
         pass
+
+    def play_ogg(self, filename):
+        """Play ogg file
+        Helper function to be called as background thread to play ofgg file
+
+        Arguments:
+            filename {string} -- full path to ogg file to be played
+        """
+        source = oalOpen(self.preview_path)
+        source.play()
+        while source.get_state() == AL_PLAYING:
+            time.sleep(1)
+        #causing issues so diabled it
+        #oalQuit()
+
 
 

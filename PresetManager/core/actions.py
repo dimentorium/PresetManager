@@ -104,6 +104,12 @@ def import_presets():
             if filename.endswith(".nksf"):
                 logging.debug('Import: %s', filename)
                 preset_to_add = items.nksfpreset(os.path.join(folder, filename))
+
+                #check for preview
+                preview_file = folder + "\\.previews\\" + filename + ".ogg"
+                if os.path.exists(preview_file):
+                    preset_to_add.preview_path = preview_file
+
                 item_list.add(preset_to_add)
                 tags.update(preset_to_add.tags)
         tags.save()
