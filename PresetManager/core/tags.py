@@ -51,8 +51,13 @@ def load():
     """
     global __ITEM_TAGS
     #read tags from file
-    with open(tag_file()) as file_to_read:
-        __ITEM_TAGS = file_to_read.read().splitlines()
+    if os.path.exists(tag_file()):
+        with open(tag_file()) as file_to_read:
+            __ITEM_TAGS = file_to_read.read().splitlines()
+    else:
+        #no tag file existing, create new
+        __ITEM_TAGS = []
+        save()
 
 def save():
     """Save.
