@@ -32,6 +32,7 @@ import sys
 
 import base64
 import reaper.preset as rpre
+from reaper import vsti_list
 import core.preset.nksf as nksf
 
 
@@ -252,18 +253,29 @@ class nksfpreset():
 
         Loading preset into Reaper.
         """
-        #load chunk from reaper and decode it
-        chunk_from_reaper = rpre.save()
-        decoded_chunk_from_reaper = chunk_from_reaper.decode_vst_chunk()
-
-        project = reapy.Project()
-        selected_track = project.get_selected_track(0)
-        selected_track.instrument.delete()
-        selected_track.add_fx(chunk_from_reaper.plugin_dll)
-
         #read nks file and get chunk
         preset_to_convert = nksf.NKSF(self.filepath, True, True, True)
         new_chunk = preset_to_convert._NKSF__chunks["PCHK"].data
+
+        #get ref to project
+        project = reapy.Project()
+        if project.n_selected_tracks == 0:
+            selected_track = project.add_track(project.n_tracks + 1, "New Track")
+            found, plugin = vsti_list.lookup(preset_to_convert.pluginname)
+            if found:
+                selected_track.add_fx(plugin.reaper_name)
+        else:
+            selected_track = project.get_selected_track(0)
+
+        #load chunk from reaper and decode it
+        chunk_from_reaper = rpre.save(selected_track)
+        decoded_chunk_from_reaper = chunk_from_reaper.decode_vst_chunk()
+
+        
+        selected_track.instrument.delete()
+        selected_track.add_fx(chunk_from_reaper.plugin_dll)
+
+        
 
         #convert chunk into list with length 210
         length = 210
@@ -294,7 +306,7 @@ class nksfpreset():
 
         #load new chunk into reaper
         chunk_from_reaper.encode_vst_chunk(progchunk)
-        rpre.load(chunk_from_reaper)
+        rpre.load(chunk_from_reaper, selected_track)
 
         
 

@@ -64,13 +64,28 @@ class main_view():
         logging.debug("Starting Main UI")
         self._search_filter = ""
         self._selected_item = None
+        
         self.root = Tk()
+        self.root.title("Reaper Preset Manager")
+
         s = Style()
         #s.configure("TButton", padding=6, relief="flat", background="#ccc")
         #s.configure('new.TFrame', background='#707070')
         #s.configure("TLabel", padding=5, relief="flat", background="#707070")
 
-        self.root.title("Reaper Preset Manager")
+        
+
+        #build menu
+        """
+        menubar = Menu(self.root)
+        filemenu = Menu(menubar, tearoff=0)
+        filemenu.add_command(label="New Database", command=actions.new_database)
+
+        menubar.add_cascade(label="File", menu=filemenu)
+        self.root.config(menu=menubar)
+        """
+
+        #Build UI
         self._frame = Frame(self.root, style='new.TFrame')
         self._frame.grid(row=0, column=0, sticky=E+W+N+S)
         

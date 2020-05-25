@@ -107,7 +107,7 @@ def available() -> bool:
 
 
 
-def save() -> reaper_preset_chunk:
+def save(selected_track = None) -> reaper_preset_chunk:
     """Save.
 
     Saves a preset from selected track in Reaper
@@ -122,7 +122,10 @@ def save() -> reaper_preset_chunk:
     """
     #get references
     project = reapy.Project()
-    selected_track = project.get_selected_track(0)
+    if selected_track == None:
+        selected_track = project.get_selected_track(0)
+    else:
+        selected_track = selected_track
 
     logging.debug('Storing preset from: ' + selected_track.name + "|" + project.name)
     #load configuration from selected track
@@ -137,7 +140,7 @@ def save() -> reaper_preset_chunk:
 
     return return_chunk
 
-def load(chunk: reaper_preset_chunk):
+def load(chunk: reaper_preset_chunk, selected_track=None):
     """Load.
 
     Loads a preset into Reaper
@@ -148,13 +151,13 @@ def load(chunk: reaper_preset_chunk):
     """
     #get references
     project = reapy.Project()
-    selected_track = None
 
     #check if a track is selected, otherwise create new track
-    if project.n_selected_tracks == 0:
-        selected_track = project.add_track(project.n_tracks + 1, "New Track")
-    else:
-        selected_track = project.get_selected_track(0)
+    if selected_track == None:
+        if project.n_selected_tracks == 0:
+            selected_track = project.add_track(project.n_tracks + 1, "New Track")
+        else:
+            selected_track = project.get_selected_track(0)
 
     #chekc if tracks has already an instrument. If so replace if different
     if selected_track.instrument == None: 
