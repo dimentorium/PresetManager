@@ -1,0 +1,8 @@
+python_reapy==0.4.3
+playsound==1.2.2
+rpp==0.4
+xmltodict==0.12.0
+PyOgg==0.6.13a1
+PyOpenAL==0.7.11a1
+msgpack_python==0.5.6
+reapy==0.0
