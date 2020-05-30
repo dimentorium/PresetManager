@@ -127,16 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-Build/PresetManager/PresetManager.zip
-Build/PresetManager/PresetManager.zip
-Build/PresetManager/PresetManager.exe
-Build/PresetManager/PresetManager.exe
-Build/PresetManager/soft_oal_64.dll
-Build/PresetManager/opusfile.dll
-Build/PresetManager/opusenc.dll
-Build/PresetManager/opus.dll
-Build/PresetManager/libvorbisfile.dll
-Build/PresetManager/libvorbis.dll
-Build/PresetManager/libogg.dll
-Build/PresetManager/libFLAC.dll
+Build/
 item_tags.txt
