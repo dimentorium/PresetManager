@@ -177,5 +177,8 @@ def load(chunk: reaper_preset_chunk, selected_track=None):
     #convert to writeable chunk
     new_chunk = rpp.dumps(vst_track_chunk_parsed)
     #set new chunk to track
-    reapy.reascript_api.SetTrackStateChunk(selected_track.id, new_chunk,False)
-    logging.debug('Setting preset to: ' + selected_track.name + "|" + project.name)
+    success = reapy.reascript_api.SetTrackStateChunk(selected_track.id, new_chunk,False)
+    if success == 1:
+        logging.debug('Setting preset to: ' + selected_track.name + "|" + project.name)
+    else:
+        logging.error('Setting preset to: ' + selected_track.name + "|" + project.name)
