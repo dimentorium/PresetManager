@@ -59,7 +59,7 @@ def load_preset():
     #call load function from selected item
     glob.main_window._selected_item.load()
     logging.debug('Loading Preset: ' + glob.main_window._selected_item.preset_name)
-    update_ui()
+    #update_ui()
 
 def edit_preset(evt):
     """Edit Preset
