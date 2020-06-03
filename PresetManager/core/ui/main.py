@@ -1,5 +1,6 @@
 import os
 import logging
+import queue
 
 from tkinter import *
 from tkinter.ttk import *
@@ -55,7 +56,7 @@ class main_view():
         presetinfo: tree for displaying selected item information
     """
     
-    def __init__(self):
+    def __init__(self, command_queue: queue.Queue):
         """Init.
 
         Initialize class properties.
@@ -64,6 +65,7 @@ class main_view():
         logging.debug("Starting Main UI")
         self._search_filter = ""
         self._selected_item = None
+        self.__command_queue = command_queue
         
         self.root = Tk()
         self.root.title("Reaper Preset Manager")
@@ -182,11 +184,12 @@ class main_view():
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         #start window on top of all others
-        self.root.wm_attributes("-topmost", 1)
+        #self.root.wm_attributes("-topmost", 1)
 
         logging.debug('Starting Mainloop')
         #call new database after half second to select
         self.root.after(500, actions.select_database)
+        self.root.after(500, self.process_incoming)
         self.root.mainloop()
 
 #============================================================#
@@ -309,4 +312,16 @@ class main_view():
             logging.debug('Exiting application')
             self.root.destroy()
 
-
+    def process_incoming(self):
+        """Handle all messages currently in the queue, if any."""
+        while self.__command_queue.qsize():
+            try:
+                message = self.__command_queue.get()
+                if message == "save_preset":
+                    actions.show()
+                    actions.save_preset()
+                elif message == "show":
+                    actions.show()
+            except queue.Empty:
+                pass
+        self.root.after(1000, self.process_incoming)

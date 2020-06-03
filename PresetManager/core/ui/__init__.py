@@ -15,8 +15,8 @@ Todo:
 import core.items as items
 from core.ui import edit_preset, startup, main
 
-def start_main():
-    main.main_view()
+def start_main(command_queue):
+    main.main_view(command_queue)
 
 def new_database_dialog():
     """Save Preset Dialog.

@@ -9,7 +9,10 @@ Classes:
 Functions
 
 Todo:
-    * Refactoring to hve cleaner structure
+    * Better interface for loading and storing PResets
+    * Load/Save multiple
+    * Preview for NKSF
+    * Load into empty track
 
 @author:         Philipp Noertersheuser
 @GIT Repository: https://github.com/dimentorium/PresetManager
@@ -19,6 +22,7 @@ Todo:
 #======================== Imorts Section ====================#
 import os
 import logging
+import queue
 import core.globals as glob
 import core.tags as tags
 import core.ui as ui
@@ -54,11 +58,14 @@ def main():
     logging.debug('Saving tag file: %s', tags.tag_file())
     tags.save()
 
+    #Create command queue
+    command_queue = queue.Queue()
+
     #start server
-    server.start()
+    server.start(command_queue)
 
     #start UI
-    ui.start_main()
+    ui.start_main(command_queue)
 
 #make sure to call main function
 main()

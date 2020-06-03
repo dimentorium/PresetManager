@@ -215,5 +215,6 @@ def show():
 
     Brings Preset Manager Window to front
     """
+    #glob.root.wm_attributes("-topmost", 0)
+    glob.root.deiconify()
     glob.root.wm_attributes("-topmost", 1)
-    glob.root.wm_attributes("-topmost", 0)
