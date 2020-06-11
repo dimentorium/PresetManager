@@ -246,16 +246,18 @@ class main_view():
         self.presetinfo.delete(*self.presetinfo.get_children())
         #check if an item in preset tree is selected
         if self._selected_item != None:
+            preset_entry = self.presetinfo.insert("", END, text=self._selected_item.preset_name)
             #loop over properties from selected item and display them in info tree
             for key, value in self._selected_item.properties.items():
                 if key != "Tags":
-                    self.presetinfo.insert("", END, text=key, values=(value,))
+                    self.presetinfo.insert(preset_entry, END, text=key, values=(value,))
             
             alltags = self._selected_item.properties["Tags"]
-            tags_entry = self.presetinfo.insert("", END, text="Tags", values=(len(alltags),))
+            tags_entry = self.presetinfo.insert(preset_entry, END, text="Tags", values=(len(alltags),))
             for prop in alltags:
                 self.presetinfo.insert(tags_entry, END, text="", values=(prop,))
             
+            self.presetinfo.item(preset_entry, open=True)
             self.presetinfo.item(tags_entry, open=True)
 
     def update_select(self):
