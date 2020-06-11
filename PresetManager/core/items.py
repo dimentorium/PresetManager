@@ -91,12 +91,22 @@ class vstipreset():
         props = collections.OrderedDict()
         props["Preset Name"] = self.preset_name
         props["Type"] = self.type
-        props["Plugin Name"] = self.chunk.plugin_name
+        props["Plugin Name"] = self.plugin_name
         props["Tags"] = self.tags
         props["Preview"] = self.preview_path
         props["Rating"] = self.rating
         props["Favorite"] = self.favorite
         return props
+
+    def search_tags(self):
+        st = []
+        st.append(self.plugin_name)
+        st.append(self.type)
+        st.extend(self.tags)
+        st.append("Rate: " + str(self.rating))
+        st.append("Favorite: " + str(self.favorite))
+        return st
+
 
     def check_filter(self, filter: str) -> bool:
         """check_filter.
@@ -229,6 +239,16 @@ class nksfpreset():
         props["Favorite"] = self.favorite
         return props
 
+
+    def search_tags(self):
+        st = []
+        st.append(self.plugin_name)
+        st.append(self.type)
+        st.extend(self.tags)
+        st.append("Rate: " + str(self.rating))
+        st.append("Favorite: " + str(self.favorite))
+        return st
+        
     def check_filter(self, filter: str) -> bool:
         """check_filter.
 

@@ -18,6 +18,7 @@ import core.ui as ui
 import core.items as items
 from core import tags, item_list, actions
 from reaper import server
+from core.ui.widgets import ScrollableFrame
 #============================================================#
 
 class main_view():
@@ -64,6 +65,8 @@ class main_view():
         """
         logging.debug("Starting Main UI")
         self._search_filter = ""
+        self.filter_tags = {}
+        self.selected_tags = []
         self._selected_item = None
         self.__command_queue = command_queue
         
@@ -104,10 +107,10 @@ class main_view():
         self.btn_save_database.grid(row=current_row,column=2, padx=5, pady=5, sticky='ew')
         current_row +=1
 
-        #Database Name
-        Label(self._frame,text="Database").grid(row=current_row, padx=5, column=0, sticky='w')
-        self.lbl_database = Label(self._frame, relief=GROOVE)
-        self.lbl_database.grid(row=current_row, column=1, columnspan=4, padx=5, pady=5, sticky='ew')
+        
+        #add frame for checkboxes
+        self._cb_frame = ScrollableFrame(self._frame, relief=GROOVE, padding=5)
+        self._cb_frame.grid(row=current_row, column=0, columnspan=5, padx=5, pady=1, sticky='ew')
         current_row +=1
 
         #Separator
@@ -216,11 +219,11 @@ class main_view():
         #get selected item from tree and select from list
         selected_item = self.presettree.item(self.presettree.focus())
         index = selected_item["text"]
-        self._selected_item = item_list.get()[index]
+        self._selected_item = item_list.get("",[])[index]
         self._selected_item.onclick()
 
         self.update_info()
-        self.update_ui()
+        #self.update_ui()
 
     def update_info(self):
         """update info.
@@ -243,6 +246,48 @@ class main_view():
             
             self.presetinfo.item(tags_entry, open=True)
 
+    def update_select(self):
+        """Update selected tags list.
+
+        Updates the list wit possible selectable tags
+        """
+        #build list of search tags from the current item list
+        #initialize list with selected items, otherwise this can lead to empty lists
+        search_tags = self.selected_tags.copy()
+        for preset in item_list.get(self._search_filter, self.selected_tags):
+            props = item_list.get("", [])[preset].search_tags()
+            for prop in props:
+                if prop not in search_tags:
+                    search_tags.append(prop)
+
+        #delete all tags from the UI to rebuild it
+        for child in self._cb_frame.scrollable_frame.winfo_children():
+            child.destroy()
+
+        #dictionary where the variables are stored in
+        self.filter_tags = {}
+        #counter for making 2 columns
+        row = 0
+        column = 0
+        for tag in search_tags:
+            #create a var that is later used for getting status of checboxes
+            checked = IntVar()
+
+            #check if tag is selected, if so set value to 1
+            if tag in self.selected_tags:
+                checked.set(1)
+
+            #create new checkbutton for search tag
+            cb = Checkbutton(self._cb_frame.scrollable_frame, text=tag, variable=checked, command=self.update_list)
+            cb.grid(row=row, column=column, sticky='ew')
+            self.filter_tags[tag] = checked
+
+            #counter for columns
+            column += 1
+            if column >= 2:
+                column = 0
+                row += 1
+
     def update_list(self):
         """update list.
 
@@ -251,19 +296,18 @@ class main_view():
         #clear all entries in preset tree
         self.presettree.delete(*self.presettree.get_children())
 
-        #loop over all items in list
-        for preset in item_list.get():
-            #call filter function from item to check if it should be shown
-            show = True
-            if self._search_filter != "":
-                show = item_list.get()[preset].check_filter(self._search_filter)
+        self.selected_tags = []
+        for key, value in self.filter_tags.items():
+            if value.get():
+                self.selected_tags.append(key)
 
-            #show item based on filter function result
-            if show:
-                self.presettree.insert("", END, 
-                                        text=item_list.get()[preset].preset_name, 
-                                        values=(item_list.get()[preset].plugin_name,))
-        
+        filtered_list = item_list.get(self._search_filter, self.selected_tags)
+
+        for preset in filtered_list:
+            self.presettree.insert("", END, 
+                                        text=filtered_list[preset].preset_name, 
+                                        values=(filtered_list[preset].plugin_name,))
+
         self.update_ui()
 
     def update_ui(self):
@@ -272,7 +316,6 @@ class main_view():
         Updates status of controls based on current selectios
         """
         if item_list.initialized():
-            self.lbl_database['text'] = item_list.file_path()
             self.btn_save_preset['state'] = NORMAL
             self.btn_import_folder['state'] = NORMAL
 
@@ -281,7 +324,7 @@ class main_view():
                 self._selected_item = None
 
             #enabe or disable save button if there is something in the database
-            if len(item_list.get()) == 0:
+            if len(item_list.get("",[])) == 0:
                 self.btn_save_database['state'] = DISABLED
             else:
                 self.btn_save_database['state'] = NORMAL
@@ -297,6 +340,8 @@ class main_view():
             self.btn_save_preset['state'] = DISABLED
             self.btn_import_folder['state'] = DISABLED
             self.btn_save_database['state'] = DISABLED
+
+        self.update_select()
 
     def on_closing(self):
         logging.debug('Exiting application clicked')

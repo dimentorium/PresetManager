@@ -116,10 +116,34 @@ def update(newitem):
     global __ITEMS
     __ITEMS[newitem.preset_name] = newitem
 
-def get() -> dict:
+def get(search_filter: str, tags: list) -> dict:
     """Get all items.
 
     returns full list of items
     """
     global __ITEMS
-    return __ITEMS
+    items_with_tags = {}
+    
+    #select only items that have selected tags
+    if len(tags) > 0:
+        for key, value in __ITEMS.items():
+            if all(tag in value.search_tags() for tag in tags):
+                items_with_tags[key] = value
+    else:
+        items_with_tags = __ITEMS
+
+    #select only items with appropriate filters
+    items_to_return = {}
+    if search_filter != "":
+    #loop over all items in list
+        for key, value in items_with_tags.items():
+            #call filter function from item to check if it should be shown
+            show = value.check_filter(search_filter)
+
+            #show item based on filter function result
+            if show:
+                items_to_return[key] = value
+    else:
+        items_to_return = items_with_tags
+
+    return items_to_return
