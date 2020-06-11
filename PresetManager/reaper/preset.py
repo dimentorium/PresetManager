@@ -24,11 +24,12 @@ import logging
 import collections
 from typing import Dict, List
 import core.ui as ui
+import core.items as it
+import reaper.vsti_list as vsti_list
 
 from base64 import decode
 
-from core import items
-
+#deriving currently not working
 class reaper_preset_chunk():
     """Reaper Prest Chunk.
 
@@ -201,3 +202,61 @@ def load(chunk: reaper_preset_chunk, selected_track=None):
         logging.debug('Setting preset to: ' + selected_track.name + "|" + project.name)
     else:
         logging.error('Setting preset to: ' + selected_track.name + "|" + project.name)
+
+def load_vst_chunk(pluginname:str, chunk_string:str):
+    """load.
+
+    Loading preset into Reaper.
+    """
+    new_chunk = chunk_string
+
+    #get ref to project
+    project = reapy.Project()
+    if project.n_selected_tracks == 0:
+        selected_track = project.add_track(project.n_tracks + 1, "New Track")
+        found, plugin = vsti_list.lookup(pluginname)
+        if found:
+            selected_track.add_fx(plugin.reaper_name)
+    else:
+        selected_track = project.get_selected_track(0)
+
+    #load chunk from reaper and decode it
+    chunk_from_reaper = save(selected_track)[0]
+    decoded_chunk_from_reaper = chunk_from_reaper.decode_vst_chunk()
+
+    
+    selected_track.instrument.delete()
+    selected_track.add_fx(chunk_from_reaper.plugin_dll)
+
+    
+
+    #convert chunk into list with length 210
+    length = 210
+    presetdata = [new_chunk[i:i+length] for i in range(0, len(new_chunk), length)]
+
+    #insert reaper specific header and footer
+    """This is used to calculate the number of list elements for the header of the fx state chunk
+    it is built up the following:
+    4 Bytes: VST ID
+    4 Bytes: Reaper Magix Number
+    4 Bytes: Number of Inputs
+    8 Bytes by Number of inputs: Input Mask
+    4 Bytes: Number of outputs
+    8 Bytes by Number of outputs: output Mask
+    4 Bytes: Something I don't know
+    8 Bytes: seems to be the end 01 00 00 00 00 00 10 00
+    """
+    instrument_description_lenth = 4 + 4 + 4 + (selected_track.instrument.n_inputs * 8) + 4 + (selected_track.instrument.n_outputs * 8) + 4 + 8
+    # calculate number of list elements needed for length. Per element its 210 bytes
+    no_list_elements = int(instrument_description_lenth / 210) + (instrument_description_lenth % 210 > 0)
+
+    if no_list_elements == 1:
+        progchunk = [decoded_chunk_from_reaper[0]] + presetdata
+    else:
+        progchunk = decoded_chunk_from_reaper[0:no_list_elements-1] + presetdata
+    pgm_name = b'\x00' + "test".encode() + b'\x00\x10\x00\x00\x00'
+    progchunk.append(pgm_name)
+
+    #load new chunk into reaper
+    chunk_from_reaper.encode_vst_chunk(progchunk)
+    load(chunk_from_reaper, selected_track)

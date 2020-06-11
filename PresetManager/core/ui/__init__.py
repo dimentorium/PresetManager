@@ -37,7 +37,7 @@ def new_database_dialog():
     new_database = database_dialog.new
     return new_database
 
-def edit_preset_dialog(preset: items.vstipreset):
+def edit_preset_dialog(preset: items.list_item):
     """Save Preset Dialog.
 
     Wrapper function showing dialog and returning data

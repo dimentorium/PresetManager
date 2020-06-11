@@ -54,40 +54,63 @@ class preset_data_base():
     """
 
     def __init__(self) -> None:
+        """Init function to be overriden
+        """
         self.plugin_name = ""
         self.type = ""
         pass
 
     @property
     def properties(self) -> Dict:
+        """Properties function to be overriden
+
+        Returns:
+            Dict: list of custom properties
+        """
         return {}
 
     def search_tags(self) -> List:
+        """Search Tags function to be overriden
+
+        Returns:
+            List: list of custom search tags
+        """
         return []
 
     def load(self) -> bool:
+        """Load function to be overriden
+
+        Returns:
+            bool: success
+        """
         return False
 
 
-class vstipreset():
-    """vstipreset.
+class list_item():
+    """List item.
 
-    Class for handling the usage and displaying of VSTi presets in the presets manager
-    All other items should implement the same functions
+    Class for handling the usage and displaying of presets in the presets manager
+    Custom imlementations are set within the chunk
 
     Methods
     -------
         init: init class and set properties
         properties: returns a list of all properties that should be displayed in the property tree
+        search_tags: returns a list of all tags that can be searched
         check_filter: function to check if the item should be shown when searching is used
-        load: handles loading of vstipreset into Reaper
-        save: handles savin of vstipreset from Reaper
-        onclick: action that is performed when vstipreset is selected
-        ondoubleclick: action that is performed when vstipreset is doubleclicked
+        load: call specific load function from chunk
+        play: play preview file
 
     Properties
     ----------
-        preset_list: list of all presets, database
+        preset_name: Name of preset
+        chunk: specific chunk data based on preset_data_base
+        plugin_name: name of plugin from chunk
+        type: type of preset from chunk
+        tags: list of strings for the tag list
+        preview_path: path to audio preview
+        rating: rating of preset from 1-5
+        favorite: mark preset as favorite
     """  
     def __init__(self, preset_name: str, chunk: preset_data_base, tags = []) -> None:
         """Init.
@@ -97,7 +120,7 @@ class vstipreset():
         Parameters
         ----------
             preset_name: name string for preset
-            chunk: chunk that is stored for Reaper
+            chunk: specific chunk data based on preset_data_base
             tags: list of strings for the tag list
         """
         self.preset_name = preset_name
@@ -170,24 +193,7 @@ class vstipreset():
         """
         result = self.chunk.load()
         return result
-    """
-    def save(self) -> bool:
-        save.
-
-        Saving presets from Reaper.
-        
-        result = False
-        #self.chunk = rp.save()
-        if self.chunk is not None:
-            #open preset dialog and configure setting
-            cancelled = ui.edit_preset_dialog(self)
-            if not cancelled:
-                result = True
-        else:
-            simpledialog.messagebox.showinfo("Warning", "Please select Track")
-
-        return result
-    """        
+  
     def play(self):
         """Play sound.
 
@@ -195,12 +201,34 @@ class vstipreset():
         """
         #check that there is a correct path for playing audio
         if self.preview_path != "":
-            #play audio
             try:
-                logging.debug("Playing: " + self.preview_path)
-                playsound(self.preview_path, block=False)
+                if self.preview_path.endswith(".ogg"):
+                    #play ogg
+                    logging.debug("Playing: " + self.preview_path)
+                    t = threading.Thread(target=self.play_ogg, args=(self.preview_path,))
+                    t.start()
+                    
+                else:
+                    #play audio wav or mp3
+                    logging.debug("Playing: " + self.preview_path)
+                    playsound(self.preview_path, block=False)
             except:
-                logging.debug("Could not play:" + self.preview_path)
+                        e = sys.exc_info()[0]
+                        logging.debug("Could not play:" + self.preview_path)
+
+    def play_ogg(self, filename):
+        """Play ogg file
+        Helper function to be called as background thread to play ofgg file
+
+        Arguments:
+            filename {string} -- full path to ogg file to be played
+        """
+        source = oalOpen(self.preview_path)
+        source.play()
+        while source.get_state() == AL_PLAYING:
+            time.sleep(1)
+        #causing issues so diabled it
+        #oalQuit()
 
 
 class nksfpreset():
@@ -354,25 +382,6 @@ class nksfpreset():
         #load new chunk into reaper
         chunk_from_reaper.encode_vst_chunk(progchunk)
         rpre.load(chunk_from_reaper, selected_track)
-
-        
-
-    def save(self) -> bool:
-        """save.
-
-        Saving presets from Reaper.
-        """
-        result = False
-        self.chunk = rp.save()
-        if self.chunk is not None:
-            #open preset dialog and configure setting
-            cancelled = ui.edit_preset_dialog(self)
-            if not cancelled:
-                result = True
-        else:
-            simpledialog.messagebox.showinfo("Warning", "Please select Track")
-
-        return result
             
 
     def onclick(self):
@@ -390,13 +399,6 @@ class nksfpreset():
             except:
                 e = sys.exc_info()[0]
                 logging.debug("Could not play:" + self.preview_path)
-
-    def ondoubleclick(self):
-        """ondoubleclick.
-
-        Action when item is double clicked.
-        """
-        pass
 
     def play_ogg(self, filename):
         """Play ogg file

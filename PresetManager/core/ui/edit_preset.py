@@ -56,7 +56,7 @@ class Edit_Preset(simpledialog.Dialog):
         btn_cancel: button for cancel
     """
 
-    def __init__(self, preset: items.vstipreset):
+    def __init__(self, preset: items.list_item):
         """Init.
 
         Initialize class properties.

@@ -27,6 +27,8 @@ import core.ui as ui
 import core.item_list as item_list
 import core.tags as tags
 
+import Importer.NKSF as inksf
+
 #============================================================#
 #=================== Preset Handling ========================#
 def save_preset():
@@ -40,7 +42,7 @@ def save_preset():
     if preset_available:
         new_preset, init_name = rp.save()
 
-        new_item = items.vstipreset(init_name, new_preset)
+        new_item = items.list_item(init_name, new_preset)
         if ui.edit_preset_dialog(new_item):
             logging.debug('Saving Preset: ' + new_item.preset_name)
             item_list.add(new_item)
@@ -54,12 +56,11 @@ def save_preset():
 def load_preset():
     """load.
 
-    Loads selected preset to selected or new track in Reaper
+    Loads selected preset
     """
     #call load function from selected item
     glob.main_window._selected_item.load()
     logging.debug('Loading Preset: ' + glob.main_window._selected_item.preset_name)
-    #update_ui()
 
 def edit_preset(evt):
     """Edit Preset
@@ -98,20 +99,7 @@ def import_presets():
 
     if os.path.exists(folder):
         logging.debug('Starting import: %s', folder)
-        #loop over files, not yet recursively
-        for filename in os.listdir(folder):
-            #if it is an nksf file, add it to list and update presets
-            if filename.endswith(".nksf"):
-                logging.debug('Import: %s', filename)
-                preset_to_add = items.nksfpreset(os.path.join(folder, filename))
-
-                #check for preview
-                preview_file = folder + "\\.previews\\" + filename + ".ogg"
-                if os.path.exists(preview_file):
-                    preset_to_add.preview_path = preview_file
-
-                item_list.add(preset_to_add)
-                tags.update(preset_to_add.tags)
+        inksf.import_folder(folder)
         tags.save()
         update_ui()
     elif folder == "":
