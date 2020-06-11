@@ -21,10 +21,15 @@ from reapy.core import track
 import rpp
 import base64
 import logging
+import collections
+from typing import Dict, List
+import core.ui as ui
 
 from base64 import decode
 
-class reaper_preset_chunk:
+from core import items
+
+class reaper_preset_chunk():
     """Reaper Prest Chunk.
 
     Class containing more information about the reaper chunk
@@ -51,10 +56,24 @@ class reaper_preset_chunk:
         Initialize all properties
         """
         self.raw = None
+        self.type = "Reaper VSTi"
         self.plugin_name = ""
         self.plugin_dll = ""
         self.vst_chunk = ""
         self.track_chunk = ""
+
+    def load(self) -> bool:
+        load(self)
+        return True
+
+    @property
+    def properties(self) -> Dict:
+        return_dict = {}
+        return_dict["DAW"] = "Reaper"
+        return return_dict
+
+    def search_tags(self) -> List:
+        return ["Reaper"]
 
     def from_element(self, element, trackchunk = None):
         """From Element.
@@ -76,8 +95,6 @@ class reaper_preset_chunk:
 
     def decode_vst_chunk(self):
         base64_message = ''.join(self.vst_chunk[:])
-        #message_bytes = base64.b64decode(base64_message)
-        #message = message_bytes.decode('utf-8')
 
         decoded_chunk = []
         for ch in self.vst_chunk:
@@ -107,7 +124,7 @@ def available() -> bool:
 
 
 
-def save(selected_track = None) -> reaper_preset_chunk:
+def save(selected_track = None):
     """Save.
 
     Saves a preset from selected track in Reaper
@@ -138,7 +155,9 @@ def save(selected_track = None) -> reaper_preset_chunk:
     return_chunk = reaper_preset_chunk()
     return_chunk.from_element(preset_chunk, vst_track_chunk)
 
-    return return_chunk
+    init_name = selected_track.name
+
+    return return_chunk, init_name
 
 def load(chunk: reaper_preset_chunk, selected_track=None):
     """Load.

@@ -38,9 +38,9 @@ def save_preset():
     preset_available = rp.available()
 
     if preset_available:
-        new_preset = rp.save()
+        new_preset, init_name = rp.save()
 
-        new_item = items.vstipreset("New Preset", new_preset)
+        new_item = items.vstipreset(init_name, new_preset)
         if ui.edit_preset_dialog(new_item):
             logging.debug('Saving Preset: ' + new_item.preset_name)
             item_list.add(new_item)

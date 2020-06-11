@@ -19,6 +19,7 @@ Todo:
 """
 
 import collections
+from typing import Dict, List
 import reaper.preset as rp
 import core.ui as ui
 from tkinter import simpledialog, filedialog
@@ -35,6 +36,37 @@ import reaper.preset as rpre
 from reaper import vsti_list
 import core.preset.nksf as nksf
 
+class preset_data_base():
+    """Preset Data class.
+
+    Base class for preset data that should be overriden by custom implementation
+    
+    Methods
+    -------
+        init: init class and set properties
+        properties: returns a list of all properties that should be displayed in the property tree
+        search_tags: list of tags that are used for searching
+        load: function that is called for loading
+        save: function that is called for saving
+
+    Properties
+    ----------
+    """
+
+    def __init__(self) -> None:
+        self.plugin_name = ""
+        self.type = ""
+        pass
+
+    @property
+    def properties(self) -> Dict:
+        return {}
+
+    def search_tags(self) -> List:
+        return []
+
+    def load(self) -> bool:
+        return False
 
 
 class vstipreset():
@@ -56,9 +88,8 @@ class vstipreset():
     Properties
     ----------
         preset_list: list of all presets, database
-    """
-
-    def __init__(self, preset_name = "", chunk = None, tags = []) -> None:
+    """  
+    def __init__(self, preset_name: str, chunk: preset_data_base, tags = []) -> None:
         """Init.
 
         Initialize class properties.
@@ -70,9 +101,9 @@ class vstipreset():
             tags: list of strings for the tag list
         """
         self.preset_name = preset_name
-        self.type = "VSTi Preset"
         self.chunk = chunk
         self.plugin_name = self.chunk.plugin_name
+        self.type = self.chunk.type
         self.tags = tags
         self.preview_path = ""
         self.rating = 0
@@ -96,17 +127,20 @@ class vstipreset():
         props["Preview"] = self.preview_path
         props["Rating"] = self.rating
         props["Favorite"] = self.favorite
+        #add properties from custom chunk implementation
+        props.update(self.chunk.properties)
         return props
 
-    def search_tags(self):
+    def search_tags(self) -> List:
         st = []
         st.append(self.plugin_name)
         st.append(self.type)
         st.extend(self.tags)
         st.append("Rate: " + str(self.rating))
         st.append("Favorite: " + str(self.favorite))
+        #add tags from custom implementation
+        st.extend(self.chunk.search_tags())
         return st
-
 
     def check_filter(self, filter: str) -> bool:
         """check_filter.
@@ -129,21 +163,21 @@ class vstipreset():
         show = show_name or show_tags or show_plugin or show_rating or show_favorite
         return show
 
-    def load(self):
+    def load(self) -> bool:
         """load.
 
         Loading preset into Reaper.
         """
-        rp.load(self.chunk)
-        
-
+        result = self.chunk.load()
+        return result
+    """
     def save(self) -> bool:
-        """save.
+        save.
 
         Saving presets from Reaper.
-        """
+        
         result = False
-        self.chunk = rp.save()
+        #self.chunk = rp.save()
         if self.chunk is not None:
             #open preset dialog and configure setting
             cancelled = ui.edit_preset_dialog(self)
@@ -153,12 +187,11 @@ class vstipreset():
             simpledialog.messagebox.showinfo("Warning", "Please select Track")
 
         return result
-            
+    """        
+    def play(self):
+        """Play sound.
 
-    def onclick(self):
-        """onclick.
-
-        Action when item is selected. Play Audio
+        Play audio preview if available
         """
         #check that there is a correct path for playing audio
         if self.preview_path != "":
@@ -169,12 +202,6 @@ class vstipreset():
             except:
                 logging.debug("Could not play:" + self.preview_path)
 
-    def ondoubleclick(self):
-        """ondoubleclick.
-
-        Action when item is double clicked.
-        """
-        pass
 
 class nksfpreset():
     """vstipreset.

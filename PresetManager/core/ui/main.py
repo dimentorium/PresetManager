@@ -232,10 +232,10 @@ class main_view():
         selected_item = self.presettree.item(self.presettree.focus())
         index = selected_item["text"]
         self._selected_item = item_list.get("",[])[index]
-        self._selected_item.onclick()
+        self._selected_item.play()
 
         self.update_info()
-        #self.update_ui()
+        self.update_ui()
 
     def update_info(self):
         """update info.
