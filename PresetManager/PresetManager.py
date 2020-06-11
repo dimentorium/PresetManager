@@ -19,16 +19,19 @@ Todo:
 @License
 """
 #============================================================#
-#======================== Imorts Section ====================#
+#======================== Imports Section ====================#
 import os
 import logging
 import queue
+
+import openal
+import pyogg
+
 import core.globals as glob
 import core.tags as tags
 import core.ui as ui
 import reaper.server as server
-from openal import *
-from pyogg import *
+
 
 #============================================================#
 #===========================Start Main Function==============#

@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+"""Preset Manager Main UI.
+
+Main UI Windows for Preset Manager
+
+Classes:
+    main_view: main classes for handling the UI
+
+Functions
+
+Todo:
+
+@author:         Philipp Noertersheuser
+@GIT Repository: https://github.com/dimentorium/PresetManager
+@License
+"""
 import os
 import logging
 import queue
@@ -11,13 +27,9 @@ import textwrap
 import pickle
 
 import core.globals as glob
-from logging import disable
-import reaper.preset as rp
-import reapy
 import core.ui as ui
 import core.items as items
 from core import tags, item_list, actions
-from reaper import server
 from core.ui.widgets import ScrollableFrame
 #============================================================#
 
