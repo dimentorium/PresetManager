@@ -30,7 +30,7 @@ import pyogg
 import core.globals as glob
 import core.tags as tags
 import core.ui as ui
-import reaper.server as server
+import core.server as server
 
 
 #============================================================#

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Server module.
 
-Small TCP IP server to receive commands from Reaper
+Small TCP IP server to receive commands 
 
 Classes:
-    reaper_server: simple TCP/IP server
+    command_server: simple TCP/IP server
 
 Functions
 
@@ -15,24 +15,30 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
-from reaper.preset import reaper_preset_chunk
 import socket
 import threading
 import logging
 import queue
-from core import actions
 
-rs = None
+___server_reference = None
 
 def start(command_queue: queue.Queue):
-    global rs
-    rs = reaper_server(command_queue)
+    """Start server.
+
+    Starts server and passes command queue
+
+    Parameters
+    -------
+        command_queue: queue wher received commands are placed
+    """
+    global ___server_reference
+    ___server_reference = command_server(command_queue)
 
 
-class reaper_server():
-    """reaper_server.
+class command_server():
+    """command_server.
 
-    TCP/IP server waiting for commands from Reaper
+    TCP/IP server waiting for commands
 
     Methods
     -------
@@ -66,7 +72,7 @@ class reaper_server():
 
         Run server
         """
-        logging.debug("Starting Reaper Com Server")
+        logging.debug("Starting Com Server")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.__host, self.__port))
             while True:
