@@ -157,8 +157,8 @@ class NKSF_file():
         self.substyle = []
         """
 
-    def load(self) -> bool:
-        rp.load_vst_chunk(self.plugin_name,self.__chunks["PCHK"].data)
+    def load(self, new_track=False) -> bool:
+        rp.load_vst_chunk(self.plugin_name,self.__chunks["PCHK"].data, new_track)
         return True
 
     @property

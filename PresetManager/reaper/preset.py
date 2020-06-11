@@ -16,6 +16,7 @@ Todo:
 @GIT Repository: https://github.com/dimentorium/PresetManager
 @License
 """
+from logging import fatal
 import reapy
 from reapy.core import track
 import rpp
@@ -63,8 +64,8 @@ class reaper_preset_chunk():
         self.vst_chunk = ""
         self.track_chunk = ""
 
-    def load(self) -> bool:
-        load(self)
+    def load(self, new_track=False) -> bool:
+        load(self, new_track=new_track)
         return True
 
     @property
@@ -160,7 +161,7 @@ def save(selected_track = None):
 
     return return_chunk, init_name
 
-def load(chunk: reaper_preset_chunk, selected_track=None):
+def load(chunk: reaper_preset_chunk, selected_track=None, new_track=False):
     """Load.
 
     Loads a preset into Reaper
@@ -173,11 +174,14 @@ def load(chunk: reaper_preset_chunk, selected_track=None):
     project = reapy.Project()
 
     #check if a track is selected, otherwise create new track
-    if selected_track == None:
-        if project.n_selected_tracks == 0:
-            selected_track = project.add_track(project.n_tracks + 1, "New Track")
-        else:
-            selected_track = project.get_selected_track(0)
+    if new_track == False:
+        if selected_track == None:
+            if project.n_selected_tracks == 0:
+                selected_track = project.add_track(project.n_tracks + 1, "New Track")
+            else:
+                selected_track = project.get_selected_track(0)
+    else:
+        selected_track = project.add_track(project.n_tracks + 1, "New Track")
 
     #chekc if tracks has already an instrument. If so replace if different
     if selected_track.instrument == None: 
@@ -203,7 +207,7 @@ def load(chunk: reaper_preset_chunk, selected_track=None):
     else:
         logging.error('Setting preset to: ' + selected_track.name + "|" + project.name)
 
-def load_vst_chunk(pluginname:str, chunk_string:str):
+def load_vst_chunk(pluginname:str, chunk_string:str, new_track=False):
     """load.
 
     Loading preset into Reaper.
@@ -212,7 +216,7 @@ def load_vst_chunk(pluginname:str, chunk_string:str):
 
     #get ref to project
     project = reapy.Project()
-    if project.n_selected_tracks == 0:
+    if project.n_selected_tracks == 0 or new_track == True:
         selected_track = project.add_track(project.n_tracks + 1, "New Track")
         found, plugin = vsti_list.lookup(pluginname)
         if found:

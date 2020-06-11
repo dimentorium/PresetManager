@@ -76,7 +76,7 @@ class preset_data_base():
         """
         return []
 
-    def load(self) -> bool:
+    def load(self, new_track=False) -> bool:
         """Load function to be overriden
 
         Returns:
@@ -185,12 +185,12 @@ class list_item():
         show = show_name or show_tags or show_plugin or show_rating or show_favorite
         return show
 
-    def load(self) -> bool:
+    def load(self,new_track=False) -> bool:
         """load.
 
         Loading preset into Reaper.
         """
-        result = self.chunk.load()
+        result = self.chunk.load(new_track)
         return result
   
     def play(self):

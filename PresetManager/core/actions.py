@@ -59,8 +59,19 @@ def load_preset():
     Loads selected preset
     """
     #call load function from selected item
-    glob.main_window._selected_item.load()
-    logging.debug('Loading Preset: ' + glob.main_window._selected_item.preset_name)
+    selected_items = glob.main_window.presettree.selection()
+    if len(selected_items) == 1:
+        glob.main_window._selected_item.load()
+        logging.debug('Loading Preset: ' + glob.main_window._selected_item.preset_name)
+    elif len(selected_items) > 1:
+        for it in selected_items:
+            index = glob.main_window.presettree.item(it)["text"]
+            selected_item = item_list.get("",[])[index]
+            selected_item.load(True)
+            logging.debug('Loading Preset: ' + selected_item.preset_name)
+    else:
+        pass
+    
 
 def edit_preset(evt):
     """Edit Preset
