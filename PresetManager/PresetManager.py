@@ -52,7 +52,7 @@ def main():
     logging.debug('Starting Preset manager main, V0.4.3, 30.05.2020')
 
     #set application folder
-    glob.application_folder = os.path.dirname(os.path.realpath(__file__))
+    glob.init(os.path.dirname(os.path.realpath(__file__)))
     logging.debug('Setting Application Path: %s', glob.application_folder)
 
     #read tags from file

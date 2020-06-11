@@ -1,7 +1,0 @@
-string
-synth
-brass
-orchestra
-poly
-mono
-complex

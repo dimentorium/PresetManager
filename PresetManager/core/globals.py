@@ -16,3 +16,11 @@ main_window: main.main_view
 
 #reference to folder where application is started from. Either script or exe
 application_folder = ""
+data_folder = ""
+
+def init(folder:str):
+    global application_folder
+    global data_folder
+    
+    application_folder = folder
+    data_folder = folder + "\\data"

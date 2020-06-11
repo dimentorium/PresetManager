@@ -42,7 +42,7 @@ def tag_file() -> str:
     Returns:
         filepath: absolute path to tag file
     """
-    return os.path.join(glob.application_folder, "item_tags.txt")
+    return os.path.join(glob.data_folder, "item_tags.txt")
 
 def load():
     """Load.
