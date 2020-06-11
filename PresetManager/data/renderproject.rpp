@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.03/x64" 1588448060
+<REAPER_PROJECT 0.1 "6.03/x64" 1591887310
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -27,7 +27,7 @@
   >
   <APPLYFX_CFG
   >
-  RENDER_FILE "C:/Users/phili/Desktop/Halion\dsfsfd.mp3"
+  RENDER_FILE "C:\Users\phili\Desktop\Reaper\Audio Tests\NKS\Piano.mp3"
   RENDER_FMT 0 2 44100
   RENDER_1X 0
   RENDER_RANGE 1 0 0 18 1000
@@ -84,7 +84,7 @@
   <PROJBAY
   >
   <TRACK {81BC40B4-6523-464C-8073-392D2B77DB25}
-    NAME dsfsfd
+    NAME Piano
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0

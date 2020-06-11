@@ -33,7 +33,7 @@ def set_output_path(folder: str):
     """
     logging.debug('Setting Render Path: ' + folder)
     #open project file
-    project_file_path = os.path.join(glob.application_folder, "renderproject.rpp")
+    project_file_path = os.path.join(glob.data_folder, "renderproject.rpp")
     project_file = open(project_file_path, "r+")
     file_content = rpp.loads(project_file.read())
 
