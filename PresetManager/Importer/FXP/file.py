@@ -14,7 +14,7 @@ Todo:
 @GIT Repository: https://dev.azure.com/ainysynth/_git/ainysynth
 @License
 """
-import core.preset.base as base
+import os
 
 class Chunk:
     """Chunk Class.
@@ -77,7 +77,12 @@ class FXPPreset(base.Preset):
 
         """
         #load file
-        super().__init__(filepath)
+        self.__filepath = filepath
+        filename = os.path.basename(self.__filepath)
+        self.preset_name = filename.split(".")[0]
+        self.type = "FXP File"
+        self.plugin_name = ""
+        self.tags = []
 
         #read filestream
         fxppresetstream = open(filepath, "rb")
