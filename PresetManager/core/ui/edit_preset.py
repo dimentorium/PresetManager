@@ -25,6 +25,7 @@ from tkinter import simpledialog, filedialog
 import core.items as items
 import core.globals as glob
 from core import tags, item_list, actions
+from core.ui.widgets import ScrollableFrame
 
 
 class Edit_Preset(simpledialog.Dialog):
@@ -236,35 +237,3 @@ class Edit_Preset(simpledialog.Dialog):
         """
         renderfilepath = render.render_audio(item_list.folder_name(), self._entry.get(), self.__preset.chunk)
         return renderfilepath
-
-
-class ScrollableFrame(Frame):
-    """Scrollable frame widget
-
-    Arguments:
-        Frame {Frame} -- Base class from TKinter
-    """
-    def __init__(self, container, *args, **kwargs):
-        """Initialize scrollable frame widget
-
-        Arguments:
-            container {unknown} -- parent widget where frame is placed in
-        """
-        super().__init__(container, *args, **kwargs)
-        canvas = Canvas(self)
-        scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = Frame(canvas)
-
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            )
-        )
-
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-
-        canvas.configure(yscrollcommand=scrollbar.set)
-
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")

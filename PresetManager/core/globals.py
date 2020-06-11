@@ -19,6 +19,11 @@ application_folder = ""
 data_folder = ""
 
 def init(folder:str):
+    """Initialize folders.
+
+    Args:
+        folder (str): absolute path to main folder
+    """
     global application_folder
     global data_folder
     
